@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - The Ronins</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-section { max-width: 600px; margin: 2rem auto; background: var(--card); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+    .admin-section h2 { text-align: center; margin-bottom: 1.5rem; }
+    .admin-section form { margin-bottom: 2rem; }
+    .admin-section label { font-weight: 600; color: var(--muted); }
+    .admin-section input, .admin-section textarea, .admin-section select { width: 100%; margin-bottom: 1rem; }
+    .admin-section .trek-list, .admin-section .booking-list { margin-top: 2rem; }
+    .admin-section .trek-item, .admin-section .booking-item { background: var(--bg); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; }
+    .admin-section button { margin-right: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="admin-dashboard">
+    <!-- Notepad Modal -->
+    <div id="notepadOverlay" class="overlay"></div>
+    <div id="notepadContainer" class="notepad-container">
+      <h2>Mismatched Fields Notes</h2>
+      <textarea id="notepadContent" placeholder="Write your notes here..."></textarea>
+      <div class="notepad-controls">
+        <button onclick="saveNotes()" class="btn btn-primary">Save</button>
+        <button onclick="closeNotepad()" class="btn">Close</button>
+      </div>
+    </div>
+
+    <style>
+      .notepad-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 800px;
+        background: var(--card);
+        padding: 2rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        z-index: 1000;
+      }
+      .notepad-container textarea {
+        width: 100%;
+        height: 400px;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--bg);
+        color: var(--text);
+        font-family: monospace;
+        resize: vertical;
+      }
+      .notepad-controls {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+    </style>
+    <aside class="admin-sidebar">
+      <div class="admin-user" style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 2rem;">
+        <span style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%); color: #fff; font-size: 1.7rem; font-weight: bold;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="5"/><path d="M17 21v-2a4 4 0 0 0-8 0v2"/></svg>
+        </span>
+        <span><b>Admin</b></span>
+      </div>
+      <nav class="admin-menu">
+  <button class="admin-menu-btn" id="adminMenuQueries" data-section="business">Business Queries</button>
+  <button class="admin-menu-btn" id="adminMenuBookings" data-section="bookings">Booking Details</button>
+  <button class="admin-menu-btn" id="adminMenuTrekwise" data-section="trekwise">Trekwise Bookings</button>
+  <button class="admin-menu-btn" id="adminMenuTreks" data-section="treks">All Treks</button>
+  <button class="admin-menu-btn" id="adminMenuAddTrek" data-section="addTrek">Changes</button>
+  <button class="admin-menu-btn" id="adminMenuFeedback" data-section="feedback">Feedback</button>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-social">
+        <span><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube" class="admin-social-icon"> <b>YouTube:</b> <span id="ytFollowers">12.3K</span></span>
+        <span><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" class="admin-social-icon"> <b>Instagram:</b> <span id="igFollowers">8.7K</span></span>
+        <span><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook" class="admin-social-icon"> <b>Facebook:</b> <span id="fbFollowers">5.2K</span></span>
+      </div>
+      <section id="adminContent">
+        <!-- Dynamic content will be loaded here -->
+      </section>
+    </main>
+  </div>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

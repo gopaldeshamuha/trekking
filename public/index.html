@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Ronins — Travel & Trekking Agency</title>
+  <meta name="description" content="Guided treks, group adventures, solo-friendly expeditions.">
+  
+  <!-- Performance monitoring -->
+  <script>
+    // Core Web Vitals & Custom Metrics
+    if (window.performance && window.performance.timing) {
+      window.addEventListener('load', function() {
+        // Calculate and log timing metrics
+        setTimeout(function() {
+          const timing = performance.timing;
+          const pageLoadTime = timing.loadEventEnd - timing.navigationStart;
+          console.log('Page Load Time:', pageLoadTime);
+          
+          // Send to analytics if available
+          if (window.gtag) {
+            gtag('event', 'timing_complete', {
+              'name': 'page_load',
+              'value': pageLoadTime,
+              'event_category': 'Performance'
+            });
+          }
+        }, 0);
+      });
+    }
+  </script>
+  
+  <!-- Preload critical assets -->
+  <link rel="preload" href="style.css" as="style">
+  <link rel="preload" href="https://fonts.cdnfonts.com/css/waltograph" as="style">
+  <link rel="dns-prefetch" href="//fonts.cdnfonts.com">
+  <link rel="dns-prefetch" href="//images.unsplash.com">
+  
+  <!-- Critical CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Non-critical CSS -->
+  <link rel="stylesheet" href="fonts.css" media="print" onload="this.media='all'">
+  
+  <!-- Waltograph Disney-style font with display swap -->
+  <link href="https://fonts.cdnfonts.com/css/waltograph" rel="stylesheet" media="print" onload="this.media='all'">
+  
+  <!-- JavaScript with modern loading -->
+  <script type="module" src="script.js"></script>
+  
+  <!-- Preload state management -->
+  <script>
+    // Add loading indicator
+    document.documentElement.classList.add('loading');
+    // Remove loading state once content is ready
+    window.addEventListener('load', () => {
+      document.documentElement.classList.remove('loading');
+    });
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="#home" class="logo" aria-label="The Ronins Home">
+       <!-- > <span class="logo-mark">TR</span> -->
+  <span class="logo-text disney-font">The Ronins</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#treks">Treks</a>
+        <a href="#register">Register</a>
+        <a href="#gallery">Gallery</a>
+        <div class="nav-dropdown">
+          <a href="#contact" class="contact-link">Contact</a>
+          <div class="business-queries-btn" tabindex="-1">Business Only</div>
+        </div>
+        <button id="feedbackBtn" class="nav-feedback-btn">Feedback</button>
+        <a href="admin.html" target="_blank">Admin</a>
+      </nav>
+  </header>
+
+  <section id="home" class="section hero">
+  <div class="hero-background"></div>
+  <div class="hero-trek-name" id="heroTrekName" style="display:none;"></div>
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <div class="social-link">
+          <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank" rel="noreferrer" aria-label="Instagram" class="social">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM18 6.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+          </a>
+          <a href="https://wa.me/919021083353" target="_blank" rel="noreferrer" aria-label="WhatsApp" class="social">
+            <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><path fill="#25D366" d="M16 3C9.373 3 4 8.373 4 15c0 2.65.87 5.1 2.36 7.1L4 29l7.18-2.32A12.93 12.93 0 0 0 16 27c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 22.917c-2.1 0-4.15-.62-5.87-1.8l-.42-.27-4.28 1.38 1.4-4.17-.27-.43A9.93 9.93 0 0 1 6 15c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10zm5.13-7.47c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.34.42-.51.14-.17.18-.29.28-.48.09-.19.05-.36-.02-.5-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.62-.47-.16-.01-.36-.01-.56-.01-.19 0-.5.07-.76.34-.26.27-1 1-.99 2.43.01 1.43 1.03 2.81 1.18 3.01.15.2 2.03 3.1 4.93 4.22.69.3 1.23.48 1.65.61.69.22 1.32.19 1.81.12.55-.08 1.65-.67 1.88-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.19-.53-.33z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube" class="social">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="#FF0000" d="M23.498 6.186a2.994 2.994 0 0 0-2.11-2.116C19.37 3.5 12 3.5 12 3.5s-7.37 0-9.388.57A2.994 2.994 0 0 0 .502 6.186C0 8.205 0 12 0 12s0 3.795.502 5.814a2.994 2.994 0 0 0 2.11 2.116C4.63 20.5 12 20.5 12 20.5s7.37 0 9.388-.57a2.994 2.994 0 0 0 2.11-2.116C24 15.795 24 12 24 12s0-3.795-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+        </div>
+        <h1>Adventures Start Here with <span class="brand">The Ronins</span></h1>
+        <p>
+          Curated treks, trusted guides, and unforgettable routes. Join a group or register your own crew — the Nature is calling.
+        </p>
+        <div class="cta-row">
+          <a href="#treks" class="btn btn-primary">Explore Treks</a>
+          <a href="#register" class="btn btn-ghost">Book Now</a>
+        </div>
+      </div>
+      <div class="hero-media">
+  <div class="marker-message">Start your booking for Next weekend</div>
+  <div class="about-card hero-card">
+  <h3 class="brand">Heroes of the Week</h3>
+  <p>The people who make the journey unforgettable.</p>
+</div>
+    <div class="team-grid">
+    <div class="team-card">
+        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800" alt="The Singer">
+        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank">
+            <span>Parth — The Singer</span>
+        </a>
+    </div>
+    <div class="team-card">
+        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800" alt="The Trek Lead">
+        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank">
+            <span>Vijay — The Trek Lead</span>
+        </a>
+    </div>
+    <div class="team-card">
+        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800" alt="The Dancer" loading="lazy">
+        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank">
+            <span>Ganesh — The Dancer</span>
+        </a>
+    </div>
+</div>
+</div>
+      </div>
+    </div>
+    <div class="gradient-divider"></div>
+    <!-- Fixed WhatsApp Button -->
+    <a href="https://wa.me/919021083353" target="_blank" rel="noreferrer" class="whatsapp-float" aria-label="Chat on WhatsApp">
+      <svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+        <path fill="#25D366" d="M16 3C9.373 3 4 8.373 4 15c0 2.65.87 5.1 2.36 7.1L4 29l7.18-2.32A12.93 12.93 0 0 0 16 27c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 22.917c-2.1 0-4.15-.62-5.87-1.8l-.42-.27-4.28 1.38 1.4-4.17-.27-.43A9.93 9.93 0 0 1 6 15c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10zm5.13-7.47c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.34.42-.51.14-.17.18-.29.28-.48.09-.19.05-.36-.02-.5-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.62-.47-.16-.01-.36-.01-.56-.01-.19 0-.5.07-.76.34-.26.27-1 1-.99 2.43.01 1.43 1.03 2.81 1.18 3.01.15.2 2.03 3.1 4.93 4.22.69.3 1.23.48 1.65.61.69.22 1.32.19 1.81.12.55-.08 1.65-.67 1.88-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.19-.53-.33z"/>
+      </svg>
+    </a>
+    <!-- Feedback Popup -->
+    <div id="feedbackPopup" class="feedback-popup" style="display:none;">
+      <div class="feedback-popup-content">
+        <button class="feedback-close" id="feedbackCloseBtn" title="Close">&times;</button>
+        <h3>Send us your Feedback</h3>
+        <form id="feedbackForm">
+          <textarea id="feedbackText" maxlength="1000" placeholder="Type your feedback (max 100 words)..." rows="4" required></textarea>
+          <div class="feedback-meta">
+            <span id="feedbackWordCount">0/100 words</span>
+            <button type="submit" class="btn btn-primary">Send</button>
+          </div>
+          <div class="form-msg" id="feedbackMsg" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <div class="container two-col">
+      <div>
+        <h2>About Us</h2>
+        <p>We’re a tribe of explorers, storytellers, and travel designers on a mission to make world-class journeys accessible, safe, and unforgettable. From trekking high peaks to unwinding on serene beaches, from exploring ancient temples to discovering hidden cultural gems—we craft experiences that go beyond just travel.</p>
+        <ul class="checklist">
+          <li>Veteran guides. Safety is non-negotiable.</li>
+          <li>Small teams for big connections.</li>
+          <li>Local expertise and strict "Leave No Trace".</li>
+        </ul>
+      </div>
+      <div class="qr-container about-logo">
+    <a href="file:///C:/Users/Ronin/Desktop/Patch/index.html" class="qr-link" target="_blank">
+        <img src="https://i.postimg.cc/wM6zb7bn/logor.png" alt="Mobile App is coming, stay tuned" loading="lazy">
+        </a>
+        <p class="qr-text">Mobile App is coming, stay tuned</p>
+</div>
+    </div>
+    <div class="gradient-divider gradient-soft"></div>
+  </section>
+
+  <section id="treks" class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>Upcoming Treks & Adventures</h2>
+        <p>Pick your route — we'll handle the rest.</p>
+      </div>
+
+      <div class="filters">
+        <input type="search" id="trekSearch" placeholder="Search trek or location" aria-label="Search treks">
+        <select id="difficultyFilter" aria-label="Filter by difficulty">
+          <option value="">All Difficulties</option>
+          <option>Easy</option>
+          <option>Moderate</option>
+          <option>Challenging</option>
+        </select>
+      </div>
+
+      <div id="trekList" class="trek-grid">
+        <div class="loading">Loading treks...</div>
+      </div>
+    </div>
+    <div class="gradient-divider"></div>
+  </section>
+
+  <section id="register" class="section">
+    <div class="container two-col">
+      <div>
+        <h2>Book Your Spot</h2>
+        <p>Solo or squad — tell us your preferences and we'll confirm availability.</p>
+        <form id="registrationForm">
+          <div class="form-grid">
+            <label>Full Name*<input type="text" name="name" required></label>
+            <label>Email*<input type="email" name="email" required></label>
+            <label>Phone*<input type="tel" name="phone" required></label>
+            <label>Trek Preference*<select name="trek" required><option value="">Select a trek</option></select></label>
+            <label>Group Size*<input type="number" name="groupSize" required min="1" max="20" value="1"></label>
+            <label class="full">Special Notes<textarea name="notes" rows="3"></textarea></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Submit Booking</button>
+            <p class="form-msg" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+      <aside class="info-card">
+        <h3>What's Next?</h3>
+        <ol>
+          <li>Submit your trek & group details.</li>
+          <li>We confirm availability and itinerary.</li>
+          <li>Complete booking & prep checklist — then go!</li>
+        </ol>
+        <p class="small">We strictly follow Leave No Trace principles.</p>
+      </aside>
+    </div>
+    <div class="gradient-divider gradient-soft"></div>
+  </section>
+
+  <section id="gallery" class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>Trail Moments</h2>
+        <p>Snapshots from recent expeditions.</p>
+      </div>
+      <div class="gallery-grid" id="trailMomentGallery">
+        <div class="loading">Loading gallery...</div>
+      </div>
+    </div>
+    <div class="gradient-divider"></div>
+  </section>
+
+  <section id="contact" class="section">
+    <div class="container two-col">
+      <div>
+        <div style="display: flex; align-items: baseline; gap: 10px;">
+          <h2 style="margin: 0;">Contact Us</h2>
+          <h4 style="margin: 0;">For Business Queries</h4>
+        </div>
+        <p>Questions or corporate trips — we'd love to help.</p>
+        <form id="contactForm">
+          <div class="form-grid">
+            <label>Your Name*<input type="text" name="name" required></label>
+            <label>Email*<input type="email" name="email" required></label>
+            <label>Phone*<input type="tel" name="phone" required pattern="[0-9\-\+\s]{8,20}" title="Please enter a valid phone number."></label>
+            <label class="full">Message*<textarea name="message" required rows="5"></textarea></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Send Message</button>
+            <p class="form-msg" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+      <aside class="map-card">
+        <div class="map-placeholder">
+         <iframe
+      width="100%"
+      height="100%"
+      style="border:0;"
+      loading="lazy"
+      allowfullscreen
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.372969732872!2d73.85674371536739!3d18.52043038740952!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c06e6dcd8b0f%3A0x1234567890abcdef!2sSai%20Arcade%2C%20Pune!5e0!3m2!1sen!2sin!4v1724788860000!5m2!1sen!2sin">
+    </iframe>
+  </div>
+        <div class="contact-lines">
+          <p><strong>Email:</strong> theronins@gmail.com</p>
+          <p><strong>Phone:</strong> +91 9021083353</p>
+          <p><strong>HQ:</strong> The Ronins Basecamp, Sai Arcade, Pune, Bharat</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="foot-brand">
+        <div class="logo small"><span class="logo-mark">TR</span><span class="logo-text">The Ronins</span></div>
+        <p class="small">Adventure with intention. © <span id="year"></span> The Ronins.</p>
+      </div>
+      <div class="foot-links">
+        <a href="#about">About</a>
+        <a href="#treks">Treks</a>
+        <a href="#register">Register</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="foot-social">
+        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" aria-label="Instagram" class="social">IG</a>
+        <a href="#" aria-label="Facebook" class="social">FB</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="trekModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+</body>
+</html>

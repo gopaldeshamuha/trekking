@@ -1,0 +1,23 @@
+.nav-feedback-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-feedback-btn:hover {
+  color: var(--primary);
+}
+
+@media (max-width: 560px) {
+  .nav-feedback-btn {
+    width: 100%;
+    text-align: left;
+    padding: 1em;
+  }
+}
