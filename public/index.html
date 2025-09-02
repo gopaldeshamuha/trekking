@@ -5,9 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Ronins — Travel & Trekking Agency</title>
   <meta name="description" content="Guided treks, group adventures, solo-friendly expeditions.">
+  <meta name="theme-color" content="#0f0a1f">
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   
-  <!-- Performance monitoring -->
+  <!-- Performance monitoring and PWA support -->
   <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+
     // Core Web Vitals & Custom Metrics
     if (window.performance && window.performance.timing) {
       window.addEventListener('load', function() {
@@ -30,20 +46,19 @@
     }
   </script>
   
-  <!-- Preload critical assets -->
-  <link rel="preload" href="style.css" as="style">
-  <link rel="preload" href="https://fonts.cdnfonts.com/css/waltograph" as="style">
-  <link rel="dns-prefetch" href="//fonts.cdnfonts.com">
-  <link rel="dns-prefetch" href="//images.unsplash.com">
-  
   <!-- Critical CSS -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- Non-critical CSS -->
-  <link rel="stylesheet" href="fonts.css" media="print" onload="this.media='all'">
+  <!-- Preload critical assets -->
+  <link rel="preload" href="script.js" as="script" crossorigin>
   
-  <!-- Waltograph Disney-style font with display swap -->
-  <link href="https://fonts.cdnfonts.com/css/waltograph" rel="stylesheet" media="print" onload="this.media='all'">
+  <!-- Async CSS -->
+  <link rel="stylesheet" href="fonts.css" media="print" onload="this.media='all'">
+  <link href="https://fonts.cdnfonts.com/css/waltograph" rel="stylesheet" media="print" onload="this.media='all'" fetchpriority="low">
+  <noscript>
+    <link rel="stylesheet" href="fonts.css">
+    <link href="https://fonts.cdnfonts.com/css/waltograph" rel="stylesheet">
+  </noscript>
   
   <!-- JavaScript with modern loading -->
   <script type="module" src="script.js"></script>
@@ -78,7 +93,7 @@
           <a href="#contact" class="contact-link">Contact</a>
           <div class="business-queries-btn" tabindex="-1">Business Only</div>
         </div>
-        <button id="feedbackBtn" class="nav-feedback-btn">Feedback</button>
+        <a href="javascript:void(0)" id="feedbackBtn" class="nav-feedback-btn">Feedback</a>
         <a href="admin.html" target="_blank">Admin</a>
       </nav>
   </header>
@@ -116,20 +131,35 @@
 </div>
     <div class="team-grid">
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800" alt="The Singer">
-        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank">
+        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=400" 
+             srcset="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=400 400w,
+                     https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800 800w"
+             sizes="(max-width: 768px) 400px, 800px"
+             alt="The Singer" 
+             fetchpriority="high">
+        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank" rel="noopener">
             <span>Parth — The Singer</span>
         </a>
     </div>
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800" alt="The Trek Lead">
-        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank">
+        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=400" 
+             srcset="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=400 400w,
+                     https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800 800w"
+             sizes="(max-width: 768px) 400px, 800px"
+             alt="The Trek Lead" 
+             loading="lazy">
+        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank" rel="noopener">
             <span>Vijay — The Trek Lead</span>
         </a>
     </div>
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800" alt="The Dancer" loading="lazy">
-        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank">
+        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=400" 
+             srcset="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=400 400w,
+                     https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800 800w"
+             sizes="(max-width: 768px) 400px, 800px"
+             alt="The Dancer" 
+             loading="lazy">
+        <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank" rel="noopener">
             <span>Ganesh — The Dancer</span>
         </a>
     </div>
@@ -150,7 +180,8 @@
         <button class="feedback-close" id="feedbackCloseBtn" title="Close">&times;</button>
         <h3>Send us your Feedback</h3>
         <form id="feedbackForm">
-          <textarea id="feedbackText" maxlength="1000" placeholder="Type your feedback (max 100 words)..." rows="4" required></textarea>
+          <label for="feedbackText" class="sr-only">Your Feedback</label>
+          <textarea id="feedbackText" name="feedbackText" maxlength="1000" placeholder="Type your feedback (max 100 words)..." rows="4" required aria-describedby="feedbackWordCount"></textarea>
           <div class="feedback-meta">
             <span id="feedbackWordCount">0/100 words</span>
             <button type="submit" class="btn btn-primary">Send</button>
@@ -216,9 +247,9 @@
             <label>Full Name*<input type="text" name="name" required></label>
             <label>Email*<input type="email" name="email" required></label>
             <label>Phone*<input type="tel" name="phone" required></label>
-            <label>Trek Preference*<select name="trek" required><option value="">Select a trek</option></select></label>
-            <label>Group Size*<input type="number" name="groupSize" required min="1" max="20" value="1"></label>
-            <label class="full">Special Notes<textarea name="notes" rows="3"></textarea></label>
+            <label for="trekSelect">Trek Preference*<select id="trekSelect" name="trek" required><option value="">Select a trek</option></select></label>
+            <label for="groupSize">Group Size*<input type="number" id="groupSize" name="groupSize" required min="1" max="20" value="1"></label>
+            <label for="specialNotes" class="full">Special Notes<textarea id="specialNotes" name="notes" rows="3"></textarea></label>
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">Submit Booking</button>
@@ -262,10 +293,10 @@
         <p>Questions or corporate trips — we'd love to help.</p>
         <form id="contactForm">
           <div class="form-grid">
-            <label>Your Name*<input type="text" name="name" required></label>
-            <label>Email*<input type="email" name="email" required></label>
-            <label>Phone*<input type="tel" name="phone" required pattern="[0-9\-\+\s]{8,20}" title="Please enter a valid phone number."></label>
-            <label class="full">Message*<textarea name="message" required rows="5"></textarea></label>
+            <label for="contactName">Your Name*<input type="text" id="contactName" name="name" required></label>
+            <label for="contactEmail">Email*<input type="email" id="contactEmail" name="email" required></label>
+            <label for="contactPhone">Phone*<input type="tel" id="contactPhone" name="phone" required pattern="[0-9\-\+\s]{8,20}" title="Please enter a valid phone number."></label>
+            <label for="contactMessage" class="full">Message*<textarea id="contactMessage" name="message" required rows="5"></textarea></label>
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">Send Message</button>
@@ -318,6 +349,16 @@
       <div id="modalBody"></div>
     </div>
   </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const contactLink = document.querySelector(".contact-link");
+      const navDropdown = document.querySelector(".nav-dropdown");
 
+      contactLink.addEventListener("click", (e) => {
+        e.preventDefault(); // prevent jumping to #contact
+        navDropdown.classList.toggle("open");
+      });
+    });
+  </script>
 </body>
 </html>

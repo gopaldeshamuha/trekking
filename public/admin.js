@@ -193,6 +193,7 @@ function saveNotes() {
     
     document.body.appendChild(messageDiv);
     setTimeout(() => messageDiv.remove(), 2000);
+        closeNotepad();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

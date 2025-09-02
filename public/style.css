@@ -114,7 +114,7 @@
   }
 }
 
-.nav-feedback-btn {
+/*.nav-feedback-btn {
   background: none;
   border: none;
   color: var(--text);
@@ -124,7 +124,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: color 0.3s;
-}
+} */
 
 .nav-feedback-btn:hover {
   color: var(--primary);
@@ -702,6 +702,7 @@ a {
   border: 0; 
   flex-direction: column;
   gap: 4px;
+  z-index: 51;
 }
 
 .nav-toggle .bar { 
@@ -709,6 +710,76 @@ a {
   height: 2px; 
   background: #fff; 
   transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex;
+    margin-left: auto; /* Push to right side */
+  }
+
+  .site-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 0%;
+    max-width: 100px;
+    background: var(--card);
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 80px 15px 0px;
+    gap: 0.5rem;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 50;
+  }
+
+  .site-nav[style="display: flex;"] {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  .site-nav a {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    margin: 0;
+    font-size: 0.7rem;
+    text-align: right;
+  }
+
+  .nav-dropdown {
+    width: 100%;
+    text-align: right;
+  }
+
+  .business-queries-btn {
+    position: static;
+    transform: none;
+    width: 100%;
+    text-align: left;
+    margin-top: 0.5rem;
+  }
+
+  /* Ensure toggle button stays on right */
+  .nav-wrap {
+    position: relative;
+  }
+  
+  .nav-toggle {
+    position: relative;
+    z-index: 52;
+    margin-right: 0;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 /* Hero Section */
@@ -982,6 +1053,8 @@ a {
   backdrop-filter: blur(10px);
   cursor: pointer;
   position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .trek-card:hover { 
@@ -1186,6 +1259,12 @@ label.full {
   justify-content: center;
   align-items: center;
   backdrop-filter: blur(5px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal[style*="display: flex"] {
+  opacity: 1;
 }
 
 .modal-content {
@@ -1199,6 +1278,101 @@ label.full {
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modern trek detail modal */
+.trek-modal-header {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.trek-modal-header img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+.trek-modal-header .overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(15,10,31,0.1), rgba(15,10,31,0.75));
+}
+.trek-modal-title {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.trek-modal-title h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+.price-chip {
+  background: linear-gradient(135deg, var(--brand-start), var(--brand-end));
+  color: #111;
+  font-weight: 800;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.trek-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 0.6rem;
+}
+.trek-stat {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.trek-tags {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin: 0.2rem 0 0.8rem;
+}
+.trek-tag {
+  background: rgba(106,0,244,0.18);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+}
+.trek-desc {
+  margin: 0.5rem 0 0.8rem;
+  line-height: 1.65;
+  color: #f4f1ff;
+}
+.modal-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.10);
+  border: 0;
+  margin: 1rem 0 0.8rem;
+}
+.modal-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+.btn-outline:hover {
+  background: rgba(255,255,255,0.08);
 }
 
 .close-btn {
@@ -1474,39 +1648,33 @@ label.full {
   background-clip: text;  
   color: transparent;
 }
-.trek-modal {
+@media (max-width: 768px) {
+  .site-nav {
+    flex-direction: column;   
+    align-items: flex-start;  
+    text-align: left;         
+    gap: 0;                   
+    padding: 0.5rem 1rem;     
+  }
+
+  .site-nav a,
+  .site-nav .nav-feedback-btn,
+  .site-nav .business-queries-btn {
+    display: block;
+    width: 100%;             
+    padding: 0.6rem 0;       
+    margin: 0;               
+    font-size: 1rem;
+    text-align: left;        
+  }
+
+  /* hide Business Only by default */
+  .nav-dropdown .business-queries-btn {
     display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
+  }
 
-.modal-content {
-    background: #1a1a1a;
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 12px;
-    padding: 2rem;
-    position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
+  /* show when parent has "open" class (set by JS) */
+  .nav-dropdown.open .business-queries-btn {
+    display: block;
+  }
 }

@@ -6,7 +6,7 @@ require('dotenv').config();
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'; // Change this to your desired password
 

@@ -126,6 +126,7 @@ if (feedbackBtn && feedbackPopup && feedbackCloseBtn && feedbackForm && feedback
 // Fetch treks from backend API
 async function loadTreks() {
   try {
+    console.log("Loading treks from API...");
     const response = await fetch('/api/treks');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -154,9 +155,10 @@ function renderTreks(list) {
     container.innerHTML = "<p class='loading'>No treks found matching your criteria.</p>";
     return;
   }
-  
+
+  // showTrekDetails defined globally below
   container.innerHTML = list.map(t => `
-    <article class="trek-card" data-trek-id="${t.id}" role="button" tabindex="0">
+    <article class="trek-card" data-id="${t.id}" role="button" tabindex="0">
       <div class="trek-media">
         <img src="${t.image || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800'}" 
              alt="${t.name}" 
@@ -174,6 +176,15 @@ function renderTreks(list) {
       </div>
     </article>
   `).join("");
+  
+  // Add click event listeners to all trek cards
+  const trekCards = container.querySelectorAll('.trek-card');
+  trekCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const trekId = card.getAttribute('data-id');
+      if (trekId) showTrekDetails(parseInt(trekId));
+    });
+  });
 }
 
 // Populate trek dropdown in registration form
@@ -189,16 +200,7 @@ function populateTrekDropdown(trekList) {
 $("#trekSearch").addEventListener("input", applyFilters);
 $("#difficultyFilter").addEventListener("change", applyFilters);
 
-// Add click handler for trek cards
-document.addEventListener('click', (e) => {
-  const trekCard = e.target.closest('.trek-card');
-  if (trekCard) {
-    const trekId = trekCard.getAttribute('data-id');
-    if (trekId) {
-      showTrekDetails(trekId);
-    }
-  }
-});
+// Click handling added per-card in renderTreks
 
 function applyFilters() {
   const query = $("#trekSearch").value.toLowerCase().trim();
@@ -217,99 +219,71 @@ function applyFilters() {
 }
 
 // Modal functionality
-function setupModalHandlers() {
-  const trekList = document.getElementById('trekList');
-  const trekModal = document.getElementById('trekModal');
-  const modalBody = document.getElementById('modalBody');
+const trekModal = $("#trekModal");
+const modalBody = $("#modalBody");
+const closeBtn = $(".close-btn");
 
-  // Add click handler for trek cards
-  if (trekList) {
-    trekList.addEventListener('click', (e) => {
-      const trekCard = e.target.closest('.trek-card');
-      if (trekCard) {
-        const trekId = trekCard.getAttribute('data-trek-id');
-        if (trekId) {
-          showTrekDetails(trekId);
-        }
-      }
-    });
+// Function to show trek details (fetches from API)
+window.showTrekDetails = async function(trekId) {
+  try {
+    const messageEl = document.querySelector('#modalBody .form-msg');
+  } catch {}
+  try {
+    modalBody.innerHTML = '<p class="loading">Loading trek details...</p>';
+    trekModal.style.display = 'flex';
+    const res = await fetch(`/api/treks/${trekId}`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch trek ${trekId}: ${res.status}`);
+    }
+    const trek = await res.json();
+    showTrekModal(trek);
+  } catch (err) {
+    console.error('Error fetching trek details:', err);
+    modalBody.innerHTML = '<p class="error-message">Failed to load trek details. Please try again.</p>';
   }
-
-  // Close modal when clicking close button or outside
-  window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('close-btn') || e.target.classList.contains('trek-modal')) {
-      if (trekModal) {
-        trekModal.style.display = 'none';
-      }
-    }
-  });
-
-  // Close modal with Escape key
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && trekModal) {
-      trekModal.style.display = 'none';
-    }
-  });
 }
 
-// Function to show trek details
-function showTrekDetails(trekId) {
-  const trekModal = document.getElementById('trekModal');
-  const modalBody = document.getElementById('modalBody');
-  const trek = treks.find(t => t.id == trekId);
-
-  if (!trek || !trekModal || !modalBody) {
-    console.error('Required elements not found');
-    return;
+// Handle trek card keyboard interaction
+$("#trekList").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    const card = e.target.closest('.trek-card');
+    if (card) {
+      e.preventDefault();
+      const trekId = card.getAttribute('data-id');
+      showTrekDetails(parseInt(trekId));
+    }
   }
-  
-  if (!modal || !modalBody) {
-    console.error('Modal elements not found. Please check if the modal HTML exists in your page.');
-    return;
-  }
+});
 
-  // Remove any existing event listeners from old forms
-  const oldForm = document.getElementById('bookingForm');
-  if (oldForm) {
-    oldForm.replaceWith(oldForm.cloneNode(true));
-  }
-
-  // Create popup content
+function showTrekModal(trek) {
   modalBody.innerHTML = `
-    <div class="modal-header">
-      <h2>${trek.name}</h2>
-      <img src="${trek.image || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800'}" 
-           alt="${trek.name}" 
-           style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px; margin: 1rem 0;"
-           onerror="this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800'">
+    <div class="trek-modal-header">
+      <img src="${trek.image || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200'}" alt="${trek.name}" onerror="this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200'" />
+      <div class="overlay"></div>
+      <div class="trek-modal-title">
+        <h2>${trek.name}</h2>
+        <span class="price-chip">₹${trek.price || (Math.floor(Math.random()*1000)+1999)}</span>
+      </div>
     </div>
     <div class="trek-details">
-      <div class="detail-grid">
-        <div><strong>Duration:</strong> ${trek.duration} days</div>
-        <div><strong>Difficulty:</strong> ${trek.difficulty}</div>
-        <div><strong>Trek Length:</strong> ${trek.trek_length} km</div>
-        <div><strong>Max Altitude:</strong> ${trek.max_altitude} ft</div>
-        <div><strong>Base Village:</strong> ${trek.base_village}</div>
-        <div><strong>Transport:</strong> ${trek.transport}</div>
-        <div><strong>Price:</strong> <span class="badge badge-price">₹${trek.price || (Math.floor(Math.random()*1000)+1999)}</span></div>
+      <div class="trek-stats">
+        <div class="trek-stat"><span>Duration</span><strong>${trek.duration} days</strong></div>
+        <div class="trek-stat"><span>Difficulty</span><strong>${trek.difficulty}</strong></div>
+        <div class="trek-stat"><span>Trek Length</span><strong>${trek.trek_length} km</strong></div>
+        <div class="trek-stat"><span>Max Altitude</span><strong>${trek.max_altitude} ft</strong></div>
+        <div class="trek-stat"><span>Base Village</span><strong>${trek.base_village}</strong></div>
+        <div class="trek-stat"><span>Transport</span><strong>${trek.transport}</strong></div>
       </div>
-      <div class="trek-info">
-        <div class="info-item">
-          <strong>Meals:</strong> ${trek.meals}
-        </div>
-        <div class="info-item">
-          <strong>Sightseeing:</strong> ${trek.sightseeing}
-        </div>
-        <div class="info-item">
-          <strong>Description:</strong>
-          <p>${trek.description}</p>
-        </div>
+      <div class="trek-tags">
+        <span class="trek-tag">Meals: ${trek.meals}</span>
+        <span class="trek-tag">Sightseeing: ${trek.sightseeing}</span>
       </div>
+      <p class="trek-desc">${trek.description}</p>
     </div>
-    <hr>
+    <hr class="modal-divider">
     <div class="booking-section">
       <h3>Book This Trek</h3>
-      <form id="bookingForm">
+      <form id="bookingForm" style="margin-top: 1rem;">
         <div class="form-grid">
           <label>Full Name*
             <input type="text" name="fullName" required>
@@ -317,7 +291,7 @@ function showTrekDetails(trekId) {
           <label>Contact Number*
             <input type="tel" name="contact" required>
           </label>
-          <label>Email*
+          <label class="full">Email*
             <input type="email" name="email" required>
           </label>
           <label>Group Size*
@@ -327,18 +301,18 @@ function showTrekDetails(trekId) {
             <textarea name="notes" rows="2"></textarea>
           </label>
         </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Book Now</button>
+        <div class="form-actions" style="margin-top: 1rem;">
+          <button type="submit" class="btn btn-primary">Submit Booking</button>
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('trekModal').style.display='none'">Close</button>
           <p class="form-msg" role="status" aria-live="polite"></p>
         </div>
       </form>
     </div>
   `;
-
-  // Show the modal
+  
   trekModal.style.display = "flex";
-
-  // Add form submission handler
+  
+  // Handle booking form submission
   const bookingForm = $("#bookingForm");
   bookingForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -353,7 +327,8 @@ $("#trekList").addEventListener("keydown", (e) => {
     if (card) {
       e.preventDefault();
       const trekId = card.getAttribute('data-id');
-      showTrekDetails(trekId);
+      console.log("Showing details for trek: line no 321", trekId);
+      showTrekDetails(parseInt(trekId));
     }
   }
 });
@@ -416,22 +391,13 @@ async function handleBookingSubmission(trekId, form) {
 }
 
 // Close modal functionality
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('close-btn') || e.target.classList.contains('trek-modal')) {
-    const modal = document.getElementById('trekModal');
-    if (modal) {
-      modal.style.display = "none";
-    }
-  }
+closeBtn.addEventListener("click", () => {
+  trekModal.style.display = "none";
 });
 
-// Also close on Escape key
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    const modal = document.getElementById('trekModal');
-    if (modal && modal.style.display === 'flex') {
-      modal.style.display = "none";
-    }
+window.addEventListener("click", (e) => {
+  if (e.target === trekModal) {
+    trekModal.style.display = "none";
   }
 });
 
@@ -627,7 +593,6 @@ function setHeroTrekName(name) {
 document.addEventListener('DOMContentLoaded', () => {
   loadTreks();
   setActiveLink();
-  setupModalHandlers();
 });
 
 // Load treks immediately if DOM is already loaded
