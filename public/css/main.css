@@ -1,4 +1,4 @@
-/* Main CSS - Imports all modular CSS files */
+/* Main CSS - Consolidated imports for better performance */
 
 /* Import base styles and variables */
 @import url('./base.css');

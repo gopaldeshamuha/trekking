@@ -24,32 +24,12 @@
       });
     }
 
-    // Core Web Vitals & Custom Metrics
-    if (window.performance && window.performance.timing) {
-      window.addEventListener('load', function() {
-        // Calculate and log timing metrics
-        setTimeout(function() {
-          const timing = performance.timing;
-          const pageLoadTime = timing.loadEventEnd - timing.navigationStart;
-          console.log('Page Load Time:', pageLoadTime);
-          
-          // Send to analytics if available
-          if (window.gtag) {
-            gtag('event', 'timing_complete', {
-              'name': 'page_load',
-              'value': pageLoadTime,
-              'event_category': 'Performance'
-            });
-          }
-        }, 0);
-      });
-    }
+
   </script>
   
   <!-- Critical CSS -->
   <link rel="stylesheet" href="css/main.css">
-  <script src="js/image-optimizer.js" defer></script>
-  <script src="js/performance-monitor.js" defer></script>
+
   
   <!-- Preload critical assets -->
   <link rel="preload" href="script.js" as="script" crossorigin>
@@ -103,6 +83,10 @@
   <section id="home" class="section hero">
   <div class="hero-background"></div>
   <div class="hero-trek-name" id="heroTrekName" style="display:none;"></div>
+  <div class="hero-loading" id="heroLoading" style="display:none;">
+    <div class="loading-spinner"></div>
+    <p>Preparing your adventure...</p>
+  </div>
   
 
   
@@ -141,7 +125,7 @@
                      https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=800 800w"
              sizes="(max-width: 768px) 400px, 800px"
              alt="The Singer" 
-             fetchpriority="high">
+             loading="lazy">
         <a href="https://www.instagram.com/the_ronins__?igsh=NXp0MGMwNWJ4dGh1" target="_blank" rel="noopener">
             <span>Parth — The Singer</span>
         </a>

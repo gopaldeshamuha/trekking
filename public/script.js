@@ -162,6 +162,7 @@ function renderTreks(list) {
       <div class="trek-media">
         <img src="${t.image || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800'}" 
              alt="${t.name}" 
+             loading="lazy"
              onerror="this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800'">
       </div>
       <div class="trek-body">
@@ -561,6 +562,69 @@ let heroBgIndex = 0;
 let heroBgInterval = null;
 
 
+function setHeroBgImage(imgUrl) {
+  const heroBg = document.querySelector('.hero-background');
+  if (!heroBg) {
+    console.error('❌ Hero background element not found in setHeroBgImage');
+    return;
+  }
+  
+  console.log('🖼️ Setting hero background image:', imgUrl);
+  heroBg.style.background = `linear-gradient(rgba(15, 10, 31, 0.7), rgba(15, 10, 31, 0.8)), url('${imgUrl}') center/cover`;
+  heroBg.style.transition = 'background-image 0.5s ease-in-out';
+}
+
+function setHeroTrekName(name) {
+  const heroTrekName = document.getElementById('heroTrekName');
+  if (!heroTrekName) {
+    console.error('❌ Hero trek name element not found in setHeroTrekName');
+    return;
+  }
+  
+  console.log('📝 Setting hero trek name:', name);
+  heroTrekName.textContent = name || '';
+}
+
+// Preload all hero images before starting slideshow
+async function preloadHeroImages(imageUrls) {
+  console.log('🔄 Preloading hero images...');
+  
+  const heroLoading = document.getElementById('heroLoading');
+  const loadingText = heroLoading ? heroLoading.querySelector('p') : null;
+  
+  let loadedCount = 0;
+  const totalCount = imageUrls.length;
+  
+  const preloadPromises = imageUrls.map((url, index) => {
+    return preloadImage(url).then(() => {
+      loadedCount++;
+      if (loadingText) {
+        loadingText.textContent = `Loading adventure ${loadedCount}/${totalCount}...`;
+      }
+      console.log(`✅ Image ${loadedCount}/${totalCount} loaded: ${url}`);
+      return url;
+    }).catch((error) => {
+      console.warn(`⚠️ Failed to load image ${index + 1}: ${url}`, error);
+      return url; // Return URL even if failed for fallback
+    });
+  });
+  
+  try {
+    await Promise.all(preloadPromises);
+    console.log('✅ All hero images preloaded successfully');
+    if (loadingText) {
+      loadingText.textContent = 'Starting your adventure...';
+    }
+    return true;
+  } catch (error) {
+    console.warn('⚠️ Some images failed to preload:', error);
+    if (loadingText) {
+      loadingText.textContent = 'Starting your adventure...';
+    }
+    return false;
+  }
+}
+
 function startHeroSlideshow() {
   console.log('🎬 Starting hero slideshow...');
   console.log('📊 Treks available:', treks ? treks.length : 'undefined');
@@ -605,44 +669,73 @@ function startHeroSlideshow() {
     heroBg.style.background = `linear-gradient(rgba(15, 10, 31, 0.7), rgba(15, 10, 31, 0.8)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1600&auto=format&fit=crop') center/cover`;
     return;
   }
-  heroBgIndex = 0;
-  setHeroBgImage(slides[heroBgIndex].image);
-  setHeroTrekName(slides[heroBgIndex].name);
+
+  // Extract image URLs for preloading
+  const imageUrls = slides.map(slide => slide.image);
+  
+  // Show loading state
+  const heroLoading = document.getElementById('heroLoading');
+  if (heroLoading) {
+    heroLoading.style.display = 'block';
+  }
+  heroBg.style.background = `linear-gradient(rgba(15, 10, 31, 0.8), rgba(15, 10, 31, 0.9)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1600&auto=format&fit=crop') center/cover`;
+  heroTrekName.textContent = 'Loading amazing treks...';
   heroTrekName.style.display = 'block';
   
-  if (heroBgInterval) clearInterval(heroBgInterval);
-  
-  heroBgInterval = setInterval(() => {
-    heroBgIndex = (heroBgIndex + 1) % slides.length;
-    console.log(`🔄 Switching to image ${heroBgIndex + 1}/${slides.length}: ${slides[heroBgIndex].name}`);
+  // Preload images then start slideshow
+  preloadHeroImages(imageUrls).then(() => {
+    console.log('🚀 Starting slideshow with preloaded images');
+    
+    // Hide loading indicator
+    if (heroLoading) {
+      heroLoading.classList.add('hidden');
+      setTimeout(() => {
+        heroLoading.style.display = 'none';
+        heroLoading.classList.remove('hidden');
+      }, 500);
+    }
+    
+    heroBgIndex = 0;
     setHeroBgImage(slides[heroBgIndex].image);
     setHeroTrekName(slides[heroBgIndex].name);
-  }, 3000);
-  
-  console.log('✅ Hero slideshow started successfully');
-}
-
-function setHeroBgImage(imgUrl) {
-  const heroBg = document.querySelector('.hero-background');
-  if (!heroBg) {
-    console.error('❌ Hero background element not found in setHeroBgImage');
-    return;
-  }
-  
-  console.log('🖼️ Setting hero background image:', imgUrl);
-  heroBg.style.background = `linear-gradient(rgba(15, 10, 31, 0.7), rgba(15, 10, 31, 0.8)), url('${imgUrl}') center/cover`;
-  heroBg.style.transition = 'background-image 0.5s ease-in-out';
-}
-
-function setHeroTrekName(name) {
-  const heroTrekName = document.getElementById('heroTrekName');
-  if (!heroTrekName) {
-    console.error('❌ Hero trek name element not found in setHeroTrekName');
-    return;
-  }
-  
-  console.log('📝 Setting hero trek name:', name);
-  heroTrekName.textContent = name || '';
+    heroTrekName.style.display = 'block';
+    
+    if (heroBgInterval) clearInterval(heroBgInterval);
+    
+    heroBgInterval = setInterval(() => {
+      heroBgIndex = (heroBgIndex + 1) % slides.length;
+      console.log(`🔄 Switching to image ${heroBgIndex + 1}/${slides.length}: ${slides[heroBgIndex].name}`);
+      setHeroBgImage(slides[heroBgIndex].image);
+      setHeroTrekName(slides[heroBgIndex].name);
+    }, 3000);
+    
+    console.log('✅ Hero slideshow started successfully with preloaded images');
+  }).catch(error => {
+    console.error('❌ Failed to preload images, starting slideshow anyway:', error);
+    // Start slideshow even if preloading failed
+    
+    // Hide loading indicator
+    if (heroLoading) {
+      heroLoading.classList.add('hidden');
+      setTimeout(() => {
+        heroLoading.style.display = 'none';
+        heroLoading.classList.remove('hidden');
+      }, 500);
+    }
+    
+    heroBgIndex = 0;
+    setHeroBgImage(slides[heroBgIndex].image);
+    setHeroTrekName(slides[heroBgIndex].name);
+    heroTrekName.style.display = 'block';
+    
+    if (heroBgInterval) clearInterval(heroBgInterval);
+    
+    heroBgInterval = setInterval(() => {
+      heroBgIndex = (heroBgIndex + 1) % slides.length;
+      setHeroBgImage(slides[heroBgIndex].image);
+      setHeroTrekName(slides[heroBgIndex].name);
+    }, 3000);
+  });
 }
 
 // Initialize the application
