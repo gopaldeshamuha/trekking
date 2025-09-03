@@ -1,5 +1,4 @@
 let lastActivityTime = Date.now();
-const INACTIVE_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 // Update last activity time
 function updateActivity() {
@@ -16,7 +15,7 @@ function checkAuth() {
 
     // Check for inactivity
     const currentTime = Date.now();
-    if (currentTime - lastActivityTime > INACTIVE_TIMEOUT || document.hidden) {
+    if (currentTime - lastActivityTime > ADMIN_UTILS.CONSTANTS.INACTIVE_TIMEOUT || document.hidden) {
         console.log('Session expired due to inactivity or tab inactive');
         localStorage.removeItem('adminToken');
         window.location.href = '/admin-login.html';
@@ -36,7 +35,7 @@ async function verifyToken() {
 
     // Check for inactivity
     const currentTime = Date.now();
-    if (currentTime - lastActivityTime > INACTIVE_TIMEOUT) {
+    if (currentTime - lastActivityTime > ADMIN_UTILS.CONSTANTS.INACTIVE_TIMEOUT) {
         console.log('Session expired due to inactivity');
         localStorage.removeItem('adminToken');
         window.location.href = '/admin-login.html';
@@ -64,7 +63,7 @@ let tokenCheckInterval;
 
 function startTokenCheck() {
   // Check token every 30 seconds
-  tokenCheckInterval = setInterval(verifyToken, 30000);
+  tokenCheckInterval = setInterval(verifyToken, ADMIN_UTILS.CONSTANTS.TOKEN_CHECK_INTERVAL);
 }
 
 function stopTokenCheck() {
@@ -83,7 +82,7 @@ const authenticatedFetch = async (url, options = {}) => {
     
     // Check for inactivity before making request
     const currentTime = Date.now();
-    if (currentTime - lastActivityTime > INACTIVE_TIMEOUT) {
+    if (currentTime - lastActivityTime > ADMIN_UTILS.CONSTANTS.INACTIVE_TIMEOUT) {
         localStorage.removeItem('adminToken');
         window.location.href = '/admin-login.html';
         return Promise.reject('Session expired due to inactivity');
@@ -236,12 +235,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const inactiveTime = currentTime - lastActivityTime;
         console.log(`Inactive time: ${Math.round(inactiveTime / 1000)} seconds`);
         
-        if (inactiveTime > INACTIVE_TIMEOUT) {
+        if (inactiveTime > ADMIN_UTILS.CONSTANTS.INACTIVE_TIMEOUT) {
             console.log('Session expired due to inactivity');
             localStorage.removeItem('adminToken');
             window.location.href = '/admin-login.html';
         }
-    }, 60000);
+    }, ADMIN_UTILS.CONSTANTS.INACTIVITY_CHECK_INTERVAL);
     
     // Stop token check when leaving the page
     window.addEventListener('beforeunload', stopTokenCheck);
@@ -526,35 +525,35 @@ async function renderSlideImageTable(tabContent) {
 function renderAddTrekFormHTML() {
     return [
       '<form id="addTrekForm" class="admin-add-trek-form">',
-      '<label for="trekName">Trek Name</label>',
-      '<input type="text" id="trekName" name="name" required>',
-      '<label for="trekDesc">Description</label>',
-      '<textarea id="trekDesc" name="description" required></textarea>',
-  '<label for="trekDuration">Duration</label>',
-  '<input type="text" id="trekDuration" name="duration" placeholder="Every Saturday & Sunday" required>',
-  '<label for="trekLength">Trek Length (m)</label>',
-  '<input type="number" id="trekLength" name="trek_length" min="1" step="1" required>',
-      '<label for="trekDifficulty">Difficulty</label>',
+      '<label for="trekName">Trek Name*</label>',
+      '<input type="text" id="trekName" name="name" required minlength="3" placeholder="Enter trek name (min 3 characters)">',
+      '<label for="trekDesc">Description*</label>',
+      '<textarea id="trekDesc" name="description" required minlength="10" placeholder="Describe the trek experience (min 10 characters)"></textarea>',
+      '<label for="trekDuration">Duration*</label>',
+      '<input type="text" id="trekDuration" name="duration" required placeholder="Every Saturday & Sunday">',
+      '<label for="trekLength">Trek Length (km)*</label>',
+      '<input type="number" id="trekLength" name="trek_length" min="0.1" step="0.1" required placeholder="Enter trek distance">',
+      '<label for="trekDifficulty">Difficulty*</label>',
       '<select id="trekDifficulty" name="difficulty" required>',
-        '<option value="">Select</option>',
+        '<option value="">Select difficulty level</option>',
         '<option value="Easy">Easy</option>',
         '<option value="Moderate">Moderate</option>',
         '<option value="Challenging">Challenging</option>',
       '</select>',
-      '<label for="trekMaxAlt">Max Altitude (ft)</label>',
-      '<input type="number" id="trekMaxAlt" name="max_altitude" min="1" required>',
-      '<label for="trekBaseVillage">Base Village</label>',
-      '<input type="text" id="trekBaseVillage" name="base_village" required>',
-      '<label for="trekTransport">Transport</label>',
-      '<input type="text" id="trekTransport" name="transport" required>',
-      '<label for="trekMeals">Meals</label>',
-      '<input type="text" id="trekMeals" name="meals" required>',
-      '<label for="trekSightseeing">Sightseeing</label>',
-      '<textarea id="trekSightseeing" name="sightseeing" required></textarea>',
-      '<label for="trekImage">Image URL</label>',
-      '<input type="url" id="trekImage" name="image" required>',
-      '<label for="trekPrice">Price (INR)</label>',
-      '<input type="number" id="trekPrice" name="price" min="0" required>',
+      '<label for="trekMaxAlt">Max Altitude (ft)*</label>',
+      '<input type="number" id="trekMaxAlt" name="max_altitude" min="1" required placeholder="Enter maximum altitude">',
+      '<label for="trekBaseVillage">Base Village*</label>',
+      '<input type="text" id="trekBaseVillage" name="base_village" required placeholder="Enter base village name">',
+      '<label for="trekTransport">Transport*</label>',
+      '<input type="text" id="trekTransport" name="transport" required placeholder="Transport details">',
+      '<label for="trekMeals">Meals*</label>',
+      '<input type="text" id="trekMeals" name="meals" required placeholder="Meal arrangements">',
+      '<label for="trekSightseeing">Sightseeing*</label>',
+      '<textarea id="trekSightseeing" name="sightseeing" required placeholder="Sightseeing highlights"></textarea>',
+      '<label for="trekImage">Image URL*</label>',
+      '<input type="url" id="trekImage" name="image" required placeholder="https://example.com/image.jpg">',
+      '<label for="trekPrice">Price (INR)*</label>',
+      '<input type="number" id="trekPrice" name="price" min="0" step="100" required placeholder="Enter trek price">',
       '<button type="submit">Add Trek</button>',
       '</form>',
       '<div id="addTrekMsg"></div>'
@@ -564,32 +563,44 @@ function renderAddTrekFormHTML() {
   function bindAddTrekForm() {
     const form = document.getElementById('addTrekForm');
     if (!form) return;
+    
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
       const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
+      
+      // Validate data using utility function
+      const validation = ADMIN_UTILS.VALIDATION.validateTrekData(data);
+      if (!validation.isValid) {
+        ADMIN_UTILS.ERROR_HANDLING.showError(validation.errors.join('<br>'), 'addTrekMsg');
+        return;
+      }
+      
       try {
-        const treksRes = await fetch('/api/treks');
-        const treks = await treksRes.json();
-        let maxId = 5;
-        if (Array.isArray(treks) && treks.length > 0) {
-          maxId = Math.max(...treks.map(t => Number(t.id) || 0));
-          if (maxId < 5) maxId = 5;
-        }
-        data.id = (maxId + 1).toString();
+        // Get next available ID
+        data.id = await ADMIN_UTILS.DATA.getNextTrekId();
+        
         const res = await fetch('/api/treks', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
+        
         if (res.ok) {
-          document.getElementById('addTrekMsg').innerHTML = '<span style="color:green">Trek added successfully!</span>';
+          ADMIN_UTILS.ERROR_HANDLING.showSuccess('Trek added successfully!', 'addTrekMsg');
           form.reset();
+          
+          // Refresh treks list if available
+          if (typeof fetchTreks === 'function') {
+            fetchTreks();
+          }
         } else {
-          document.getElementById('addTrekMsg').innerHTML = '<span style="color:red">Failed to add trek.</span>';
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Failed to add trek');
         }
       } catch (err) {
-        document.getElementById('addTrekMsg').innerHTML = '<span style="color:red">Error adding trek.</span>';
+        const errorMessage = ADMIN_UTILS.ERROR_HANDLING.handleApiError(err, 'Adding trek');
+        ADMIN_UTILS.ERROR_HANDLING.showError(errorMessage, 'addTrekMsg');
       }
     });
   }
@@ -692,105 +703,49 @@ function renderTrekwiseBookings(rows, lastResetTime) {
 });
 // Add Trek form rendering and submission
 
-function renderAddTrekForm() {
-  const content = document.getElementById('adminContent');
-  content.innerHTML = [
-    '<section class="admin-changes-section">',
-      '<form id="addTrekForm" class="admin-add-trek-form">',
-      '<label for="trekName">Trek Name</label>',
-      '<input type="text" id="trekName" name="name" required>',
-      '<label for="trekDesc">Description</label>',
-      '<textarea id="trekDesc" name="description" required></textarea>',
-      '<label for="trekDuration">Duration (days)</label>',
-      '<input type="number" id="trekDuration" name="duration" min="1" required>',
-      '<label for="trekLength">Trek Length (km)</label>',
-      '<input type="number" id="trekLength" name="trek_length" min="1" step="0.1" required>',
-      '<label for="trekDifficulty">Difficulty</label>',
-      '<select id="trekDifficulty" name="difficulty" required>',
-        '<option value="">Select</option>',
-        '<option value="Easy">Easy</option>',
-        '<option value="Moderate">Moderate</option>',
-        '<option value="Challenging">Challenging</option>',
-      '</select>',
-      '<label for="trekMaxAlt">Max Altitude (ft)</label>',
-      '<input type="number" id="trekMaxAlt" name="max_altitude" min="1" required>',
-      '<label for="trekBaseVillage">Base Village</label>',
-      '<input type="text" id="trekBaseVillage" name="base_village" required>',
-      '<label for="trekTransport">Transport</label>',
-      '<input type="text" id="trekTransport" name="transport" required>',
-      '<label for="trekMeals">Meals</label>',
-      '<input type="text" id="trekMeals" name="meals" required>',
-      '<label for="trekSightseeing">Sightseeing</label>',
-      '<textarea id="trekSightseeing" name="sightseeing" required></textarea>',
-      '<label for="trekImage">Image URL</label>',
-      '<input type="url" id="trekImage" name="image" required>',
-      '<label for="trekPrice">Price (INR)</label>',
-      '<input type="number" id="trekPrice" name="price" min="0" required>',
-      '<button type="submit">Add Trek</button>',
-      '</form>',
-      '<div id="addTrekMsg"></div>',
-    '</section>'
-  ].join('');
+// Consolidated Add Trek form - using renderAddTrekFormHTML() function
 
-  const form = document.getElementById('addTrekForm');
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    // Fetch all treks to determine the next available ID
-    try {
-      const treksRes = await fetch('/api/treks');
-      const treks = await treksRes.json();
-      let maxId = 5;
-      if (Array.isArray(treks) && treks.length > 0) {
-        maxId = Math.max(...treks.map(t => Number(t.id) || 0));
-        if (maxId < 5) maxId = 5;
-      }
-      data.id = (maxId + 1).toString();
-      const res = await fetch('/api/treks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        document.getElementById('addTrekMsg').innerHTML = '<span style="color:green">Trek added successfully!</span>';
-        form.reset();
-      } else {
-        document.getElementById('addTrekMsg').innerHTML = '<span style="color:red">Failed to add trek.</span>';
-      }
-    } catch (err) {
-      document.getElementById('addTrekMsg').innerHTML = '<span style="color:red">Error adding trek.</span>';
-    }
-  });
-}
+// Form binding is handled by bindAddTrekForm() function
 
 async function fetchTreks() {
   try {
     const res = await fetch('/api/treks');
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
     const treks = await res.json();
     renderTreks(treks);
   } catch (err) {
-    renderError('Failed to load treks.');
+    const errorMessage = ADMIN_UTILS.ERROR_HANDLING.handleApiError(err, 'Fetching treks');
+    renderError(errorMessage);
   }
 }
 
 async function fetchBookings() {
   try {
     const res = await fetch('/api/bookings');
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
     const bookings = await res.json();
     renderBookings(bookings);
   } catch (err) {
-    renderError('Failed to load bookings.');
+    const errorMessage = ADMIN_UTILS.ERROR_HANDLING.handleApiError(err, 'Fetching bookings');
+    renderError(errorMessage);
   }
 }
 
 async function fetchQueries() {
   try {
     const res = await fetch('/api/business-queries');
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
     const queries = await res.json();
     renderQueries(queries);
   } catch (err) {
-    renderError('Failed to load business queries.');
+    const errorMessage = ADMIN_UTILS.ERROR_HANDLING.handleApiError(err, 'Fetching business queries');
+    renderError(errorMessage);
   }
 }
 
@@ -1027,21 +982,8 @@ function renderBookings(bookings) {
       '</tbody>'
     ].join('');
 
-    // Pagination controls
-    let pagination = '';
-    if (totalPages > 1) {
-      pagination = '<div style="display:flex;justify-content:center;align-items:center;gap:0.7em;margin:1em 0;">';
-      if (pageNum > 1) {
-        pagination += `<button class="booking-page-btn" data-page="${pageNum-1}" style="background:#ff9800;color:#fff;border:none;border-radius:6px;padding:0.4em 1em;cursor:pointer;font-weight:600;">Prev</button>`;
-      }
-      for (let i = 1; i <= totalPages; i++) {
-        pagination += `<button class="booking-page-btn${i===pageNum?' active':''}" data-page="${i}" style="background:${i===pageNum?'#ffb347':'#fff'};color:${i===pageNum?'#222':'#ff9800'};border:none;border-radius:6px;padding:0.4em 1em;cursor:pointer;font-weight:600;">${i}</button>`;
-      }
-      if (pageNum < totalPages) {
-        pagination += `<button class="booking-page-btn" data-page="${pageNum+1}" style="background:#ff9800;color:#fff;border:none;border-radius:6px;padding:0.4em 1em;cursor:pointer;font-weight:600;">Next</button>`;
-      }
-      pagination += '</div>';
-    }
+    // Pagination controls using utility function
+    const pagination = ADMIN_UTILS.UI.createPagination(pageNum, totalPages, (page) => renderPage(page));
 
     content.innerHTML = [
       '<div class="admin-booking-table-wrap" style="overflow-x:auto;">',
@@ -1053,13 +995,8 @@ function renderBookings(bookings) {
       pagination
     ].join('');
 
-    // Add event listeners for pagination
-    content.querySelectorAll('.booking-page-btn').forEach(btn => {
-      btn.onclick = function() {
-        const p = Number(btn.getAttribute('data-page'));
-        renderPage(p);
-      };
-    });
+    // Add event listeners for pagination using utility function
+    ADMIN_UTILS.UI.bindPaginationEvents(content, (page) => renderPage(page));
   }
 
   renderPage(page);
@@ -1133,21 +1070,8 @@ function renderQueries(queries) {
       '</tbody>'
     ].join('');
 
-    // Pagination controls
-    let pagination = '';
-    if (totalPages > 1) {
-      pagination = '<div style="display:flex;justify-content:center;align-items:center;gap:0.7em;margin:1em 0;">';
-      if (pageNum > 1) {
-        pagination += `<button class="query-page-btn" data-page="${pageNum-1}" style="background:#ff9800;color:#fff;border:none;border-radius:6px;padding:0.4em 1em;cursor:pointer;font-weight:600;">Prev</button>`;
-      }
-      for (let i = 1; i <= totalPages; i++) {
-        pagination += `<button class="query-page-btn${i===pageNum?' active':''}" data-page="${i}" style="background:${i===pageNum?'#ffb347':'#fff'};color:${i===pageNum?'#222':'#ff9800'};border:none;border-radius:6px;padding:0.4em 1em;cursor:pointer;font-weight:600;">${i}</button>`;
-      }
-      if (pageNum < totalPages) {
-        pagination += `<button class="query-page-btn" data-page="${pageNum+1}" style="background:#ff9800;color:#fff;border:none;border-radius:6px;padding:0.4em 1em;cursor:pointer;font-weight:600;">Next</button>`;
-      }
-      pagination += '</div>';
-    }
+    // Pagination controls using utility function
+    const pagination = ADMIN_UTILS.UI.createPagination(pageNum, totalPages, (page) => renderPage(page));
 
     content.innerHTML = [
       '<div class="admin-booking-table-wrap" style="overflow-x:auto;">',
@@ -1159,13 +1083,8 @@ function renderQueries(queries) {
       pagination
     ].join('');
 
-    // Pagination event listeners
-    content.querySelectorAll('.query-page-btn').forEach(btn => {
-      btn.onclick = function() {
-        const p = Number(btn.getAttribute('data-page'));
-        renderPage(p);
-      };
-    });
+    // Pagination event listeners using utility function
+    ADMIN_UTILS.UI.bindPaginationEvents(content, (page) => renderPage(page));
 
     // Contacted button event listeners (one-way only)
     content.querySelectorAll('.contacted-btn').forEach(btn => {

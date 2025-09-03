@@ -878,7 +878,11 @@ a {
   bottom: 0;
   background: linear-gradient(rgba(15, 10, 31, 0.7), rgba(15, 10, 31, 0.8)),
               url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1600&auto=format&fit=crop') center/cover;
-  z-index: -1;
+  z-index: 1;
+  transition: background-image 0.5s ease-in-out;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Hero Trek Name Overlay */
