@@ -244,17 +244,37 @@ window.showTrekDetails = async function(trekId) {
   }
 }
 
-// Handle trek card keyboard interaction
-$("#trekList").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" || e.key === " ") {
+// Handle trek card keyboard interaction - Cross-device compatible
+function handleTrekCardKeyboard(e) {
+  // Handle Enter key (works on all devices)
+  if (e.key === "Enter") {
     const card = e.target.closest('.trek-card');
     if (card) {
       e.preventDefault();
       const trekId = card.getAttribute('data-id');
-      showTrekDetails(parseInt(trekId));
+      if (trekId) {
+        showTrekDetails(parseInt(trekId));
+      }
     }
+    return;
   }
-});
+
+  // Handle Space key (works on PC/tablet, safe on mobile)
+  if (e.key === " ") {
+    const card = e.target.closest('.trek-card');
+    if (card) {
+      e.preventDefault();
+      const trekId = card.getAttribute('data-id');
+      if (trekId) {
+        showTrekDetails(parseInt(trekId));
+      }
+    }
+    return;
+  }
+}
+
+// Single event listener for cross-device compatibility
+$("#trekList").addEventListener("keydown", handleTrekCardKeyboard);
 
 function showTrekModal(trek) {
   modalBody.innerHTML = `
@@ -326,18 +346,7 @@ function showTrekModal(trek) {
   });
 }
 
-// Handle trek card keyboard interaction
-$("#trekList").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" || e.key === " ") {
-    const card = e.target.closest('.trek-card');
-    if (card) {
-      e.preventDefault();
-      const trekId = card.getAttribute('data-id');
-      console.log("Showing details for trek: line no 321", trekId);
-      showTrekDetails(parseInt(trekId));
-    }
-  }
-});
+// Duplicate event listener removed - now using single handler above
 
 // Removed showTrekModal function as it's now integrated into showTrekDetails
 
