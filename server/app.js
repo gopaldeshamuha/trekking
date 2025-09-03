@@ -326,21 +326,226 @@ app.get('/api/treks/:id', async (req, res) => {
   }
 });
 
+// Comprehensive validation function for trek data
+function validateTrekData(data) {
+  const errors = [];
+  const sanitized = {};
+
+  // Name validation
+  if (!data.name || typeof data.name !== 'string') {
+    errors.push('Trek name is required and must be a string');
+  } else {
+    const name = data.name.trim();
+    if (name.length < 3 || name.length > 100) {
+      errors.push('Trek name must be between 3 and 100 characters');
+    } else {
+      // Remove HTML tags and dangerous characters
+      sanitized.name = name.replace(/[<>\"'&]/g, '');
+    }
+  }
+
+  // Description validation
+  if (!data.description || typeof data.description !== 'string') {
+    errors.push('Description is required and must be a string');
+  } else {
+    const desc = data.description.trim();
+    if (desc.length < 10 || desc.length > 2000) {
+      errors.push('Description must be between 10 and 2000 characters');
+    } else {
+      sanitized.description = desc.replace(/[<>\"'&]/g, '');
+    }
+  }
+
+  // Duration validation
+  if (!data.duration || typeof data.duration !== 'string') {
+    errors.push('Duration is required and must be a string');
+  } else {
+    const duration = data.duration.trim();
+    if (duration.length < 1 || duration.length > 50) {
+      errors.push('Duration must be between 1 and 50 characters');
+    } else {
+      sanitized.duration = duration.replace(/[<>\"'&]/g, '');
+    }
+  }
+
+  // Trek length validation
+  if (!data.trek_length || isNaN(data.trek_length)) {
+    errors.push('Trek length must be a valid number');
+  } else {
+    const length = parseFloat(data.trek_length);
+    if (length <= 0 || length > 1000) {
+      errors.push('Trek length must be between 0.1 and 1000 km');
+    } else {
+      sanitized.trek_length = length;
+    }
+  }
+
+  // Difficulty validation
+  if (!data.difficulty || typeof data.difficulty !== 'string') {
+    errors.push('Difficulty is required and must be a string');
+  } else {
+    const difficulty = data.difficulty.trim();
+    const validDifficulties = ['Easy', 'Moderate', 'Challenging'];
+    if (!validDifficulties.includes(difficulty)) {
+      errors.push('Difficulty must be Easy, Moderate, or Challenging');
+    } else {
+      sanitized.difficulty = difficulty;
+    }
+  }
+
+  // Max altitude validation
+  if (!data.max_altitude || isNaN(data.max_altitude)) {
+    errors.push('Max altitude must be a valid number');
+  } else {
+    const altitude = parseFloat(data.max_altitude);
+    if (altitude <= 0 || altitude > 30000) {
+      errors.push('Max altitude must be between 1 and 30000 ft');
+    } else {
+      sanitized.max_altitude = altitude;
+    }
+  }
+
+  // Base village validation
+  if (!data.base_village || typeof data.base_village !== 'string') {
+    errors.push('Base village is required and must be a string');
+  } else {
+    const village = data.base_village.trim();
+    if (village.length < 2 || village.length > 100) {
+      errors.push('Base village must be between 2 and 100 characters');
+    } else {
+      sanitized.base_village = village.replace(/[<>\"'&]/g, '');
+    }
+  }
+
+  // Transport validation
+  if (!data.transport || typeof data.transport !== 'string') {
+    errors.push('Transport is required and must be a string');
+  } else {
+    const transport = data.transport.trim();
+    if (transport.length < 2 || transport.length > 200) {
+      errors.push('Transport must be between 2 and 200 characters');
+    } else {
+      sanitized.transport = transport.replace(/[<>\"'&]/g, '');
+    }
+  }
+
+  // Meals validation
+  if (!data.meals || typeof data.meals !== 'string') {
+    errors.push('Meals information is required and must be a string');
+  } else {
+    const meals = data.meals.trim();
+    if (meals.length < 2 || meals.length > 200) {
+      errors.push('Meals information must be between 2 and 200 characters');
+    } else {
+      sanitized.meals = meals.replace(/[<>\"'&]/g, '');
+    }
+  }
+
+  // Sightseeing validation
+  if (!data.sightseeing || typeof data.sightseeing !== 'string') {
+    errors.push('Sightseeing information is required and must be a string');
+  } else {
+    const sightseeing = data.sightseeing.trim();
+    if (sightseeing.length < 2 || sightseeing.length > 200) {
+      errors.push('Sightseeing information must be between 2 and 200 characters');
+    } else {
+      sanitized.sightseeing = sightseeing.replace(/[<>\"'&]/g, '');
+    }
+  }
+
+  // Image URL validation
+  if (!data.image || typeof data.image !== 'string') {
+    errors.push('Image URL is required and must be a string');
+  } else {
+    const image = data.image.trim();
+    // Validate URL format and prevent malicious URLs
+    try {
+      const url = new URL(image);
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        errors.push('Image URL must use HTTP or HTTPS protocol');
+      } else if (url.hostname.includes('javascript:') || url.hostname.includes('data:')) {
+        errors.push('Invalid image URL format');
+      } else {
+        sanitized.image = image;
+      }
+    } catch {
+      errors.push('Invalid image URL format');
+    }
+  }
+
+  // Price validation (optional field)
+  if (data.price !== undefined && data.price !== null) {
+    const price = parseFloat(data.price);
+    if (isNaN(price) || price < 0 || price > 100000) {
+      errors.push('Price must be between 0 and 100000');
+    } else {
+      sanitized.price = price;
+    }
+  } else {
+    sanitized.price = 1999; // Default price
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitized
+  };
+}
+
 // ADMIN: Add new trek
 app.post('/api/treks', async (req, res) => {
-  const { name, description, duration, trek_length, difficulty, max_altitude, base_village, transport, meals, sightseeing, image, price } = req.body;
-  if (!name || !description || !duration || !trek_length || !difficulty || !max_altitude || !base_village || !transport || !meals || !sightseeing || !image) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
   try {
+    // Comprehensive validation and sanitization
+    const validation = validateTrekData(req.body);
+
+    if (!validation.isValid) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: validation.errors
+      });
+    }
+
+    const { sanitized } = validation;
+
+    // Insert sanitized data into database
     const [result] = await pool.query(
       'INSERT INTO treks (name, description, duration, trek_length, difficulty, max_altitude, base_village, transport, meals, sightseeing, image, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, description, duration, trek_length, difficulty, max_altitude, base_village, transport, meals, sightseeing, image, price || 1999]
+      [
+        sanitized.name,
+        sanitized.description,
+        sanitized.duration,
+        sanitized.trek_length,
+        sanitized.difficulty,
+        sanitized.max_altitude,
+        sanitized.base_village,
+        sanitized.transport,
+        sanitized.meals,
+        sanitized.sightseeing,
+        sanitized.image,
+        sanitized.price
+      ]
     );
-    res.status(201).json({ message: 'Trek added', id: result.insertId });
+
+    res.status(201).json({
+      message: 'Trek added successfully',
+      id: result.insertId,
+      trek: sanitized
+    });
+
   } catch (err) {
     console.error('Error adding trek:', err);
-    res.status(500).json({ error: 'Error adding trek' });
+
+    // Handle specific database errors
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ error: 'A trek with this name already exists' });
+    }
+
+    if (err.code === 'ER_DATA_TOO_LONG') {
+      return res.status(400).json({ error: 'One or more fields exceed maximum length' });
+    }
+
+    // Generic error for other database issues
+    res.status(500).json({ error: 'Unable to add trek. Please try again later.' });
   }
 });
 
