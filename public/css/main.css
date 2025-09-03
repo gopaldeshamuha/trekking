@@ -6,11 +6,11 @@
 /* Import component styles */
 @import url('./components.css');
 
-/* Import layout styles */
-@import url('./layout.css');
-
 /* Import utility classes */
 @import url('./utilities.css');
 
-/* Import existing custom styles */
+/* Import existing custom styles FIRST to avoid conflicts */
 @import url('../style.css');
+
+/* Import layout styles LAST to ensure proper overrides */
+@import url('./layout.css');

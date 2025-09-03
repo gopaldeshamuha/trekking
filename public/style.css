@@ -868,6 +868,7 @@ a {
   min-height: 80vh;
   display: flex;
   align-items: center;
+  background: none; /* Ensure no background conflicts */
 }
 
 .hero-background {
@@ -878,11 +879,16 @@ a {
   bottom: 0;
   background: linear-gradient(rgba(15, 10, 31, 0.7), rgba(15, 10, 31, 0.8)),
               url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1600&auto=format&fit=crop') center/cover;
-  z-index: 1;
+  z-index: 0;
   transition: background-image 0.5s ease-in-out;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+/* Ensure hero section has no conflicting background */
+.section.hero {
+  background: none !important;
 }
 
 /* Hero Trek Name Overlay */
@@ -921,7 +927,7 @@ a {
   grid-template-columns: 1.2fr 0.8fr;
   align-items: center;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .hero-text {

@@ -59,8 +59,8 @@
   background: rgba(255,255,255,0.1);
 }
 
-/* Hero Section */
-.hero {
+/* Hero Section - Override with more specific selectors to avoid conflicts */
+.section.hero {
   color: white;
   padding: var(--spacing-2xl) 0;
   text-align: center;

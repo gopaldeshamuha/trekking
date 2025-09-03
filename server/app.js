@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 // Rate limiting
 const rateLimit = require('express-rate-limit');
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('❌ JWT_SECRET environment variable is required!');
