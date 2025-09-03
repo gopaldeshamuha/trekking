@@ -163,9 +163,82 @@ function openNotepad() {
     notepadContainer.style.display = 'block';
     overlay.style.display = 'block';
     textarea.focus();
+    
+    // Add auto-save on input with visual feedback
+    let saveTimeout;
+    const inputHandler = () => {
+        notepadContent = textarea.value;
+        localStorage.setItem('mismatchedNotes', notepadContent);
+        
+        // Show "Saving..." indicator
+        const saveIndicator = document.getElementById('saveIndicator');
+        if (saveIndicator) {
+            saveIndicator.textContent = 'Saving...';
+            saveIndicator.style.opacity = '1';
+            
+            // Clear previous timeout
+            if (saveTimeout) clearTimeout(saveTimeout);
+            
+            // Hide indicator after 1 second
+            saveTimeout = setTimeout(() => {
+                saveIndicator.style.opacity = '0';
+            }, 1000);
+        }
+    };
+    
+    const keydownHandler = (e) => {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            saveNotes();
+        }
+        if (e.key === 'Escape') {
+            closeNotepad();
+        }
+    };
+    
+    // Remove any existing listeners to prevent duplicates
+    textarea.removeEventListener('input', inputHandler);
+    textarea.removeEventListener('keydown', keydownHandler);
+    
+    // Add new listeners
+    textarea.addEventListener('input', inputHandler);
+    textarea.addEventListener('keydown', keydownHandler);
+    
+    // Add click handler for overlay to close notepad
+    const overlayClickHandler = (e) => {
+        if (e.target === overlay) {
+            closeNotepad();
+        }
+    };
+    
+    // Remove existing overlay listener and add new one
+    overlay.removeEventListener('click', overlayClickHandler);
+    overlay.addEventListener('click', overlayClickHandler);
 }
 
 function closeNotepad() {
+    // Auto-save before closing
+    const textarea = document.getElementById('notepadContent');
+    if (textarea) {
+        notepadContent = textarea.value;
+        localStorage.setItem('mismatchedNotes', notepadContent);
+        
+        // Show auto-save confirmation
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = 'Notes auto-saved!';
+        messageDiv.style.position = 'fixed';
+        messageDiv.style.bottom = '20px';
+        messageDiv.style.right = '20px';
+        messageDiv.style.background = '#4ade80';
+        messageDiv.style.color = 'white';
+        messageDiv.style.padding = '10px 20px';
+        messageDiv.style.borderRadius = '5px';
+        messageDiv.style.zIndex = '1001';
+        
+        document.body.appendChild(messageDiv);
+        setTimeout(() => messageDiv.remove(), 2000);
+    }
+    
     const notepadContainer = document.getElementById('notepadContainer');
     const overlay = document.getElementById('notepadOverlay');
     
@@ -192,7 +265,9 @@ function saveNotes() {
     
     document.body.appendChild(messageDiv);
     setTimeout(() => messageDiv.remove(), 2000);
-        closeNotepad();
+    
+    // Close the notepad after saving
+    closeNotepad();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -18,10 +18,13 @@
 </head>
 <body>
   <div class="admin-dashboard">
-    <!-- Notepad Modal 
+    <!-- Notepad Modal -->
     <div id="notepadOverlay" class="overlay"></div>
     <div id="notepadContainer" class="notepad-container">
       <h2>Mismatched Fields Notes</h2> 
+      <div class="notepad-header">
+        <span id="saveIndicator" class="save-indicator">Ready</span>
+      </div>
       <textarea id="notepadContent" placeholder="Write your notes here..."></textarea>
       <div class="notepad-controls">
         <button onclick="saveNotes()" class="btn btn-primary">Save</button>
@@ -70,7 +73,27 @@
         bottom: 0;
         background: rgba(0, 0, 0, 0.5);
         z-index: 999;
-      } -->
+      }
+      
+      .notepad-header {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1rem;
+      }
+      
+      .save-indicator {
+        font-size: 0.9rem;
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: var(--bg);
+        transition: opacity 0.3s ease;
+        opacity: 0.7;
+      }
+      
+      .save-indicator:not([style*="opacity: 0"]) {
+        opacity: 1;
+      }
     </style>
     <aside class="admin-sidebar">
       <div class="admin-user" style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 2rem;">
