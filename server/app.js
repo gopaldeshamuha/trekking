@@ -5,11 +5,12 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const helmet = require('helmet');
 
 // Rate limiting
 const rateLimit = require('express-rate-limit');
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3003;
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('❌ JWT_SECRET environment variable is required!');
@@ -50,6 +51,31 @@ const limiter = rateLimit({
 // Apply rate limiting to all routes
 app.use(limiter);
 
+// Helmet.js security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.cdnfonts.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://fonts.cdnfonts.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      frameAncestors: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"]
+    }
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  hidePoweredBy: true // This removes X-Powered-By header
+}));
+
 // Stricter rate limiting for authentication endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -58,6 +84,9 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// Helmet.js handles all security headers automatically
+// No need for duplicate custom security middleware
 
 // Middleware - Moving these to top before routes
 app.use(express.json());
@@ -406,6 +435,34 @@ app.post('/api/bookings', async (req, res) => {
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Security headers test endpoint
+app.get('/api/security-test', (req, res) => {
+  res.json({ 
+    message: 'Security headers test',
+    headers: {
+      'X-Frame-Options': res.getHeader('X-Frame-Options'),
+      'X-Content-Type-Options': res.getHeader('X-Content-Type-Options'),
+      'X-XSS-Protection': res.getHeader('X-XSS-Protection'),
+      'Content-Security-Policy': res.getHeader('Content-Security-Policy'),
+      'Strict-Transport-Security': res.getHeader('Strict-Transport-Security'),
+      'Permissions-Policy': res.getHeader('Permissions-Policy')
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Robots.txt endpoint (explicit serving)
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.sendFile(path.join(__dirname, '../public/robots.txt'));
+});
+
+// Security.txt endpoint
+app.get('/.well-known/security.txt', (req, res) => {
+  res.type('text/plain');
+  res.sendFile(path.join(__dirname, '../public/.well-known/security.txt'));
 });
 
 // Catch-all handler for frontend routes

@@ -1,0 +1,77 @@
+# Robots.txt for Ronins Trekking Website
+# This file prevents search engines and crawlers from indexing sensitive areas
+
+# Block all crawlers from sensitive areas
+User-agent: *
+Disallow: /admin
+Disallow: /admin-login.html
+Disallow: /admin.html
+Disallow: /admin.js
+Disallow: /admin-utils.js
+Disallow: /admin-gallery.js
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /css/
+Disallow: /js/
+Disallow: /fonts.css
+Disallow: /sw.js
+Disallow: /build.js
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /db_init.sql
+Disallow: /test/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /lighthouse-report.json
+Disallow: /ronins-trekking-website.tar.gz
+
+# Allow only main public pages
+Allow: /
+Allow: /index.html
+Allow: /style.css
+Allow: /script.js
+
+# Block specific crawlers that might be aggressive
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: dotbot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# Block archive.org from archiving sensitive content
+User-agent: ia_archiver
+Disallow: /admin
+Disallow: /api
+Disallow: /uploads
+
+# Block social media crawlers from sensitive areas
+User-agent: facebookexternalhit
+Disallow: /admin
+Disallow: /api
+
+User-agent: Twitterbot
+Disallow: /admin
+Disallow: /api
+
+User-agent: LinkedInBot
+Disallow: /admin
+Disallow: /api
+
+# Crawl delay for all bots (optional, but good practice)
+Crawl-delay: 1
+
+# Sitemap location (uncomment when you have a sitemap)
+# Sitemap: https://yourdomain.com/sitemap.xml
+
+# Additional security note
+# This robots.txt is part of our security strategy
+# Please respect these directives for responsible crawling
