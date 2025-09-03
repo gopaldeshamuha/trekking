@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Test</title>
+    <link rel="stylesheet" href="public/style.css">
+</head>
+<body>
+    <button onclick="showTestModal()" style="padding: 20px; font-size: 18px; margin: 50px;">Test Modal</button>
+
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeTestModal()">&times;</span>
+            <div class="trek-modal-header">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200" alt="Test Trek" />
+                <div class="overlay"></div>
+                <div class="trek-modal-title">
+                    <h2>Test Trek Name</h2>
+                    <span class="price-chip">₹2999</span>
+                </div>
+            </div>
+            
+            <div class="trek-details">
+                <div class="trek-stats">
+                    <div class="trek-stat"><span>Duration</span><strong>2 days</strong></div>
+                    <div class="trek-stat"><span>Difficulty</span><strong>Moderate</strong></div>
+                    <div class="trek-stat"><span>Trek Length</span><strong>8 km</strong></div>
+                    <div class="trek-stat"><span>Max Altitude</span><strong>3000 ft</strong></div>
+                </div>
+                
+                <div class="trek-tags">
+                    <span class="trek-tag">Meals: Breakfast & Lunch</span>
+                    <span class="trek-tag">Sightseeing: Mountain Views</span>
+                </div>
+                
+                <p class="trek-desc">This is a test trek description to verify the modal layout and styling. It should display in a single column with proper spacing and scrolling.</p>
+            </div>
+            
+            <hr class="modal-divider">
+            
+            <div class="booking-section">
+                <h3>Book This Trek</h3>
+                <form id="testBookingForm">
+                    <div class="form-grid-single">
+                        <label>Full Name*
+                            <input type="text" name="fullName" required>
+                        </label>
+                        <label>Contact Number*
+                            <input type="tel" name="contact" required>
+                        </label>
+                        <label>Email*
+                            <input type="email" name="email" required>
+                        </label>
+                        <label>Group Size*
+                            <input type="number" name="groupSize" min="1" max="20" value="1" required>
+                        </label>
+                        <label>Special Notes
+                            <textarea name="notes" rows="3" placeholder="Any special requirements or notes..."></textarea>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Submit Booking</button>
+                        <button type="button" class="btn btn-outline" onclick="closeTestModal()">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTestModal() {
+            document.getElementById('testModal').style.display = 'flex';
+        }
+        
+        function closeTestModal() {
+            document.getElementById('testModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('testModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

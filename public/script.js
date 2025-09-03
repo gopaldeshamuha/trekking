@@ -265,43 +265,48 @@ function showTrekModal(trek) {
         <span class="price-chip">₹${trek.price || (Math.floor(Math.random()*1000)+1999)}</span>
       </div>
     </div>
+    
     <div class="trek-details">
       <div class="trek-stats">
-        <div class="trek-stat"><span>Duration</span><strong>${trek.duration} days</strong></div>
+        <div class="trek-stat"><span>Duration</span><strong>${trek.duration}</strong></div>
         <div class="trek-stat"><span>Difficulty</span><strong>${trek.difficulty}</strong></div>
         <div class="trek-stat"><span>Trek Length</span><strong>${trek.trek_length} km</strong></div>
         <div class="trek-stat"><span>Max Altitude</span><strong>${trek.max_altitude} ft</strong></div>
         <div class="trek-stat"><span>Base Village</span><strong>${trek.base_village}</strong></div>
         <div class="trek-stat"><span>Transport</span><strong>${trek.transport}</strong></div>
       </div>
+      
       <div class="trek-tags">
         <span class="trek-tag">Meals: ${trek.meals}</span>
         <span class="trek-tag">Sightseeing: ${trek.sightseeing}</span>
       </div>
+      
       <p class="trek-desc">${trek.description}</p>
     </div>
+    
     <hr class="modal-divider">
+    
     <div class="booking-section">
       <h3>Book This Trek</h3>
-      <form id="bookingForm" style="margin-top: 1rem;">
-        <div class="form-grid">
+      <form id="bookingForm">
+        <div class="form-grid-single">
           <label>Full Name*
             <input type="text" name="fullName" required>
           </label>
           <label>Contact Number*
             <input type="tel" name="contact" required>
           </label>
-          <label class="full">Email*
+          <label>Email*
             <input type="email" name="email" required>
           </label>
           <label>Group Size*
             <input type="number" name="groupSize" min="1" max="20" value="1" required>
           </label>
-          <label class="full">Special Notes
-            <textarea name="notes" rows="2"></textarea>
+          <label>Special Notes
+            <textarea name="notes" rows="3" placeholder="Any special requirements or notes..."></textarea>
           </label>
         </div>
-        <div class="form-actions" style="margin-top: 1rem;">
+        <div class="form-actions">
           <button type="submit" class="btn btn-primary">Submit Booking</button>
           <button type="button" class="btn btn-outline" onclick="document.getElementById('trekModal').style.display='none'">Close</button>
           <p class="form-msg" role="status" aria-live="polite"></p>
