@@ -210,6 +210,18 @@ if (!process.env.DB_PASSWORD) {
   process.exit(1);
 }
 
+// HTML sanitization function to prevent XSS attacks
+function sanitizeHtml(input) {
+  if (typeof input !== 'string') return input;
+  return input
+    .replace(/&/g, '&amp;')    // Must be first
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
 // Create a connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -231,13 +243,17 @@ app.post('/api/feedback', async (req, res) => {
   if (!feedback || typeof feedback !== 'string' || !feedback.trim()) {
     return res.status(400).json({ error: 'Feedback cannot be empty.' });
   }
+
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedFeedback = sanitizeHtml(feedback.trim());
+
   // Limit to 100 words (enforced on frontend, but double-check here)
-  const words = feedback.trim().split(/\s+/).filter(Boolean);
+  const words = sanitizedFeedback.split(/\s+/).filter(Boolean);
   if (words.length > 100) {
     return res.status(400).json({ error: 'Feedback must be 100 words or less.' });
   }
   try {
-    await pool.query('INSERT INTO feedback (feedback) VALUES (?)', [feedback.trim()]);
+    await pool.query('INSERT INTO feedback (feedback) VALUES (?)', [sanitizedFeedback]);
     res.status(201).json({ message: 'Feedback submitted successfully.' });
   } catch (err) {
     console.error('Error saving feedback:', err);
@@ -259,26 +275,30 @@ app.get('/api/business-queries', async (req, res) => {
 // POST /api/business-queries - Submit a new business query
 app.post('/api/business-queries', async (req, res) => {
   const { name, email, phone, message } = req.body;
-  
+
   // Validate required fields
   if (!name || !email || !phone || !message) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
-  
+
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedName = sanitizeHtml(name.trim());
+  const sanitizedMessage = sanitizeHtml(message.trim());
+
   // Email format validation
   if (!/^\S+@\S+\.\S+$/.test(email)) {
     return res.status(400).json({ error: 'Invalid email format.' });
   }
-  
+
   // Phone format validation
   if (!/^[0-9\-\+\s]{8,20}$/.test(phone)) {
     return res.status(400).json({ error: 'Invalid phone number format.' });
   }
-  
+
   try {
     await pool.query(
       'INSERT INTO business_queries (name, email, phone, message, created_at) VALUES (?, ?, ?, ?, NOW())',
-      [name, email, phone, message]
+      [sanitizedName, email, sanitizedMessage]
     );
     res.status(201).json({ message: 'Query submitted successfully.' });
   } catch (err) {
@@ -623,16 +643,22 @@ app.post('/api/bookings', async (req, res) => {
   if (!/^[0-9\-\+\s]{8,20}$/.test(contact)) {
     return res.status(400).json({ error: 'Invalid phone number format' });
   }
+
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedTrekName = sanitizeHtml(trekName.trim());
+  const sanitizedFullName = sanitizeHtml(fullName.trim());
+  const sanitizedNotes = notes ? sanitizeHtml(notes.trim()) : null;
+
   try {
     // Check if trek exists
     const [trekRows] = await pool.query('SELECT id FROM treks WHERE id = ?', [trek_id]);
     if (trekRows.length === 0) {
       return res.status(404).json({ error: 'Trek not found' });
     }
-    // Insert booking
+    // Insert booking with sanitized data
     const [result] = await pool.query(
       'INSERT INTO bookings (trek_id, trekName, fullName, contact, email, groupSize, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
-      [trek_id, trekName, fullName, contact, email, groupSize || 1, notes || null]
+      [trek_id, sanitizedTrekName, sanitizedFullName, contact, email, groupSize || 1, sanitizedNotes]
     );
     res.status(201).json({ 
       message: 'Booking created successfully',

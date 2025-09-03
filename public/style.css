@@ -138,6 +138,16 @@
     width: 100%;
     text-align: left;
     padding: 1em;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+  }
+
+  .nav-feedback-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-2px);
   }
 }
 .button-style {
@@ -735,20 +745,52 @@ a {
 
 /* Navigation */
 .site-header {
-  position: sticky; 
-  top: 0; 
+  position: sticky;
+  top: 0;
   z-index: 50;
   background: rgba(10, 6, 22, 0.85);
   backdrop-filter: blur(15px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.nav-wrap { 
+.site-header:hover {
+  background: rgba(10, 6, 22, 0.9);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Subtle gradient accent at bottom of navigation */
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 224, 102, 0.3) 20%,
+    rgba(255, 224, 102, 0.5) 50%,
+    rgba(255, 224, 102, 0.3) 80%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.site-header:hover::after {
+  opacity: 1;
+}
+
+.nav-wrap {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.6rem 0; /* increased vertical padding for taller navigation bar */
+  padding: 1.8rem 0; /* Balanced height for better visual presence */
+  min-height: 70px; /* Comfortable minimum height */
+  transition: all 0.3s ease;
 }
 
 .logo { 
@@ -760,15 +802,21 @@ a {
 }
 
 .logo-mark {
-  width: 42px; 
-  height: 42px; 
+  width: 42px;
+  height: 42px;
   background: linear-gradient(135deg, var(--brand-start), var(--brand-end));
-  border-radius: 14px; 
-  display: grid; 
-  place-items: center; 
-  box-shadow: var(--shadow);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 16px rgba(255, 224, 102, 0.3);
   color: white;
   font-weight: 800;
+  transition: all 0.3s ease;
+}
+
+.logo-mark:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 224, 102, 0.4);
 }
 
 .logo-text { 
@@ -811,17 +859,20 @@ a {
   z-index: 101;
 }
 
-.site-nav a { 
-  color: #fff; 
-  padding: 0.6rem 0.8rem; 
-  border-radius: 10px; 
-  transition: all 0.2s ease; 
+.site-nav a {
+  color: #fff;
+  padding: 0.7rem 0.9rem; /* Balanced padding for navbar */
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-.site-nav a:hover, 
-.site-nav a.active { 
-  background: rgba(255, 255, 255, 0.08); 
-  transform: translateY(-1px);
+.site-nav a:hover,
+.site-nav a.active {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 .nav-toggle { 
@@ -841,9 +892,28 @@ a {
   transition: all 0.3s ease;
 }
 
+/* Medium Screen Navigation Enhancement */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .nav-wrap {
+    padding: 1.6rem 0; /* Balanced height for medium screens */
+    min-height: 65px;
+  }
+}
+
+/* Tablet Navigation Enhancement */
 @media (max-width: 768px) {
   .nav-wrap {
-    padding: 1rem 0; /* Slightly reduced padding on mobile */
+    padding: 1.4rem 0; /* Balanced height for tablets */
+    min-height: 60px; /* Comfortable minimum height */
+  }
+
+  .site-header {
+    background: rgba(10, 6, 22, 0.9); /* Slightly more opaque for better contrast */
+  }
+
+  .site-nav a {
+    padding: 0.6rem 0.8rem; /* Balanced for tablet */
+    font-size: 0.95rem;
   }
   
   .nav-toggle {
@@ -879,6 +949,14 @@ a {
     margin: 0;
     font-size: 0.7rem;
     text-align: right;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .site-nav a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-2px);
   }
 
   .nav-dropdown {
@@ -892,17 +970,37 @@ a {
     width: 100%;
     text-align: left;
     margin-top: 0.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.25rem;
   }
 
-  /* Ensure toggle button stays on right */
+  .business-queries-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-2px);
+  }
+
+  /* Mobile Navigation Enhancement */
   .nav-wrap {
     position: relative;
+    padding: 1.2rem 0; /* Balanced height for mobile */
+    min-height: 55px; /* Comfortable touch target */
   }
-  
+
+  .site-header {
+    background: rgba(10, 6, 22, 0.95); /* More opaque for mobile readability */
+    backdrop-filter: blur(20px); /* Enhanced blur for mobile */
+  }
+
   .nav-toggle {
     position: relative;
     z-index: 52;
     margin-right: 0;
+    width: 44px; /* Better touch target */
+    height: 44px; /* Better touch target */
   }
 }
 
@@ -1885,11 +1983,23 @@ label.full {
   .site-nav .nav-feedback-btn,
   .site-nav .business-queries-btn {
     display: block;
-    width: 100%;             
-    padding: 0.6rem 0;       
-    margin: 0;               
+    width: 100%;
+    padding: 0.6rem 0;
+    margin: 0;
     font-size: 1rem;
-    text-align: left;        
+    text-align: left;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+  }
+
+  .site-nav a:hover,
+  .site-nav .nav-feedback-btn:hover,
+  .site-nav .business-queries-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(2px);
   }
 
   /* hide Business Only by default */
