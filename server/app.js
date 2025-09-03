@@ -120,7 +120,7 @@ app.post('/api/admin/login', authLimiter, (req, res) => {
     const { password } = req.body;
     
     if (password === ADMIN_PASSWORD) {
-        const token = jwt.sign({ admin: true }, JWT_SECRET, { expiresIn: '600s' }); // 10 minutes in seconds
+        const token = jwt.sign({ admin: true }, JWT_SECRET, { expiresIn: '6000s' }); // 100 minutes in seconds
         res.json({ token });
     } else {
         res.status(401).json({ error: 'Invalid password' });
@@ -203,11 +203,18 @@ app.get('/api/feedback', async (req, res) => {
 });
 
 
+// Validate required database environment variables
+if (!process.env.DB_PASSWORD) {
+  console.error('❌ DB_PASSWORD environment variable is required!');
+  console.error('Please set DB_PASSWORD in your .env file');
+  process.exit(1);
+}
+
 // Create a connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '1234567890',
+  password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || 'ronins_treks',
   waitForConnections: true,
   connectionLimit: 10,
