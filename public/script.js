@@ -266,7 +266,7 @@ function handleTrekCardKeyboard(e) {
       e.preventDefault();
       const trekId = card.getAttribute('data-id');
       if (trekId) {
-        showTrekDetails(parseInt(trekId));
+      showTrekDetails(parseInt(trekId));
       }
     }
     return;
@@ -704,15 +704,15 @@ function startHeroSlideshow() {
       }, 500);
     }
     
-    heroBgIndex = 0;
-    setHeroBgImage(slides[heroBgIndex].image);
-    setHeroTrekName(slides[heroBgIndex].name);
-    heroTrekName.style.display = 'block';
+  heroBgIndex = 0;
+  setHeroBgImage(slides[heroBgIndex].image);
+  setHeroTrekName(slides[heroBgIndex].name);
+  heroTrekName.style.display = 'block';
     
-    if (heroBgInterval) clearInterval(heroBgInterval);
+  if (heroBgInterval) clearInterval(heroBgInterval);
     
-    heroBgInterval = setInterval(() => {
-      heroBgIndex = (heroBgIndex + 1) % slides.length;
+  heroBgInterval = setInterval(() => {
+    heroBgIndex = (heroBgIndex + 1) % slides.length;
       console.log(`🔄 Switching to image ${heroBgIndex + 1}/${slides.length}: ${slides[heroBgIndex].name}`);
       setHeroBgImage(slides[heroBgIndex].image);
       setHeroTrekName(slides[heroBgIndex].name);

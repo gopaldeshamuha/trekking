@@ -275,7 +275,7 @@ app.get('/api/business-queries', async (req, res) => {
 // POST /api/business-queries - Submit a new business query
 app.post('/api/business-queries', async (req, res) => {
   const { name, email, phone, message } = req.body;
-
+  
   // Validate required fields
   if (!name || !email || !phone || !message) {
     return res.status(400).json({ error: 'All fields are required.' });
@@ -284,21 +284,21 @@ app.post('/api/business-queries', async (req, res) => {
   // Sanitize HTML to prevent XSS attacks
   const sanitizedName = sanitizeHtml(name.trim());
   const sanitizedMessage = sanitizeHtml(message.trim());
-
+  
   // Email format validation
   if (!/^\S+@\S+\.\S+$/.test(email)) {
     return res.status(400).json({ error: 'Invalid email format.' });
   }
-
+  
   // Phone format validation
   if (!/^[0-9\-\+\s]{8,20}$/.test(phone)) {
     return res.status(400).json({ error: 'Invalid phone number format.' });
   }
-
+  
   try {
     await pool.query(
       'INSERT INTO business_queries (name, email, phone, message, created_at) VALUES (?, ?, ?, ?, NOW())',
-      [sanitizedName, email, sanitizedMessage]
+      [sanitizedName, email, phone, sanitizedMessage]
     );
     res.status(201).json({ message: 'Query submitted successfully.' });
   } catch (err) {
@@ -667,6 +667,48 @@ app.post('/api/bookings', async (req, res) => {
   } catch (err) {
     console.error('Error creating booking:', err);
     res.status(500).json({ error: 'Error creating booking' });
+  }
+});
+
+// POST /api/contact - Handle contact form submissions
+app.post('/api/contact', async (req, res) => {
+  const { name, email, phone, message } = req.body;
+  
+  // Validate required fields
+  if (!name || !email || !phone || !message) {
+    return res.status(400).json({ 
+      error: 'Missing required fields: name, email, phone, message' 
+    });
+  }
+  
+  // Email format validation
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+  
+  // Phone format validation
+  if (!/^[0-9\-\+\s]{8,20}$/.test(phone)) {
+    return res.status(400).json({ error: 'Invalid phone number format' });
+  }
+
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedName = sanitizeHtml(name.trim());
+  const sanitizedMessage = sanitizeHtml(message.trim());
+
+  try {
+    // Insert contact query into business_queries table
+    const [result] = await pool.query(
+      'INSERT INTO business_queries (name, email, phone, message, created_at) VALUES (?, ?, ?, ?, NOW())',
+      [sanitizedName, email, phone, sanitizedMessage]
+    );
+    
+    res.status(201).json({ 
+      message: 'Contact form submitted successfully',
+      id: result.insertId 
+    });
+  } catch (err) {
+    console.error('Error submitting contact form:', err);
+    res.status(500).json({ error: 'Error submitting contact form' });
   }
 });
 

@@ -267,7 +267,7 @@ function saveNotes() {
     setTimeout(() => messageDiv.remove(), 2000);
     
     // Close the notepad after saving
-    closeNotepad();
+        closeNotepad();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
