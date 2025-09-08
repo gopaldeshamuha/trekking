@@ -119,7 +119,7 @@ This document outlines the comprehensive security measures implemented in the Ro
 ## 🚨 Security Incident Response
 
 ### Contact Information
-- **Security Email**: security@roninstreks.com
+- **Security Email**: roninrau001@gmail.com
 - **Security Policy**: https://roninstreks.com/security-policy
 - **Responsible Disclosure**: Follows industry best practices
 
@@ -189,5 +189,5 @@ This document outlines the comprehensive security measures implemented in the Ro
 ---
 
 **Last Updated**: December 2024  
-**Security Contact**: security@roninstreks.com  
+**Security Contact**: roninrau001@gmail.com  
 **Version**: 1.0

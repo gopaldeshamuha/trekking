@@ -1,6 +1,4 @@
-Contact: mailto:security@roninstreks.com
+Contact: mailto:roninrau001@gmail.com
 Expires: 2025-12-31T23:59:59.000Z
 Preferred-Languages: en
 Canonical: https://roninstreks.com/.well-known/security.txt
-Policy: https://roninstreks.com/security-policy
-Hiring: https://roninstreks.com/careers

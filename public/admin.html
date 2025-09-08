@@ -122,6 +122,37 @@
       </section>
     </main>
   </div>
+  <script>
+    // Authentication check - redirect to login if not authenticated
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        // No token found, redirect to login
+        window.location.href = '/admin-login.html';
+        return;
+      }
+      
+      // Verify token is still valid
+      fetch('/api/admin/verify', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          // Token is invalid, redirect to login
+          localStorage.removeItem('adminToken');
+          window.location.href = '/admin-login.html';
+        }
+        // Token is valid, continue loading admin panel
+      })
+      .catch(() => {
+        // Network error, redirect to login
+        localStorage.removeItem('adminToken');
+        window.location.href = '/admin-login.html';
+      });
+    });
+  </script>
   <script src="admin-utils.js"></script>
   <script type="module" src="admin.js"></script>
 </body>

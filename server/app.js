@@ -73,7 +73,8 @@ app.use(helmet({
     preload: true
   },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-  hidePoweredBy: true // This removes X-Powered-By header
+  hidePoweredBy: true, // This removes X-Powered-By header
+  xssFilter: true // Enable XSS protection
 }));
 
 // Stricter rate limiting for authentication endpoints

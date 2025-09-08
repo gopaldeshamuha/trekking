@@ -8,12 +8,10 @@ Disallow: /admin-login.html
 Disallow: /admin.html
 Disallow: /admin.js
 Disallow: /admin-utils.js
-Disallow: /admin-gallery.js
 Disallow: /api/
 Disallow: /uploads/
 Disallow: /css/
 Disallow: /js/
-Disallow: /fonts.css
 Disallow: /sw.js
 Disallow: /build.js
 Disallow: /package.json
@@ -22,8 +20,6 @@ Disallow: /db_init.sql
 Disallow: /test/
 Disallow: /node_modules/
 Disallow: /.git/
-Disallow: /lighthouse-report.json
-Disallow: /ronins-trekking-website.tar.gz
 
 # Allow only main public pages
 Allow: /
@@ -66,12 +62,5 @@ User-agent: LinkedInBot
 Disallow: /admin
 Disallow: /api
 
-# Crawl delay for all bots (optional, but good practice)
+# Crawl delay for all bots
 Crawl-delay: 1
-
-# Sitemap location (uncomment when you have a sitemap)
-# Sitemap: https://yourdomain.com/sitemap.xml
-
-# Additional security note
-# This robots.txt is part of our security strategy
-# Please respect these directives for responsible crawling
