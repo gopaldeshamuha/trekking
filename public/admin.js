@@ -471,11 +471,11 @@ async function renderTrailMomentImageTable(tabContent) {
           </td>
           <td>
             <div style="display:flex;flex-direction:column;gap:0.5em;align-items:center;">
-              <button onclick="saveTrailMoment(${i})" 
-                class="save-moment-btn"
-                style="background:linear-gradient(90deg,#ff9800,#ffb347);color:#fff;font-weight:700;padding:0.4em 1.2em;border:none;border-radius:8px;cursor:pointer;">
-                Save
-              </button>
+            <button onclick="saveTrailMoment(${i})" 
+              class="save-moment-btn"
+              style="background:linear-gradient(90deg,#ff9800,#ffb347);color:#fff;font-weight:700;padding:0.4em 1.2em;border:none;border-radius:8px;cursor:pointer;">
+              Save
+            </button>
               <div id="trailMomentMsg${i}" style="font-size:0.8em;min-height:1.2em;text-align:center;max-width:120px;"></div>
             </div>
           </td>
