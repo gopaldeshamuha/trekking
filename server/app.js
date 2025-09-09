@@ -57,6 +57,7 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.cdnfonts.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://fonts.cdnfonts.com"],
       imgSrc: ["'self'", "data:", "https:"],
@@ -97,8 +98,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 const allowedOrigins = [
   'http://localhost:3001',
   'http://localhost:3000',
+  'http://localhost:3003',
   'http://127.0.0.1:3001',
-  'http://127.0.0.1:3000'
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3003'
 ];
 
 app.use((req, res, next) => {
@@ -151,7 +154,7 @@ app.get('/api/gallery', (req, res) => {
 });
 
 // POST /api/gallery - Update gallery image URLs
-app.post('/api/gallery', (req, res) => {
+app.post('/api/gallery', verifyAdmin, (req, res) => {
   console.log('Received gallery update request:', req.body);
   
   if (!req.body || typeof req.body !== 'object') {
@@ -190,6 +193,53 @@ app.post('/api/gallery', (req, res) => {
     console.log('Gallery updated successfully');
     res.json({ message: 'Gallery updated.' });
   });
+});
+
+// --- Week Heroes (Team Members) API ---
+// GET /api/team-members - Get all team members
+app.get('/api/team-members', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM team_members ORDER BY display_order, id');
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching team members:', err);
+    res.status(500).json({ error: 'Error fetching team members' });
+  }
+});
+
+// PUT /api/team-members/:id - Update team member
+app.put('/api/team-members/:id', verifyAdmin, async (req, res) => {
+  const memberId = req.params.id;
+  const { name, role, image_url, instagram_url } = req.body;
+  
+  // Validate required fields
+  if (!name || !role || !image_url || !instagram_url) {
+    return res.status(400).json({ error: 'All fields are required: name, role, image_url, instagram_url' });
+  }
+
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedName = sanitizeHtml(name.trim());
+  const sanitizedRole = sanitizeHtml(role.trim());
+  
+  // Validate URLs
+  try {
+    new URL(image_url);
+    new URL(instagram_url);
+  } catch {
+    return res.status(400).json({ error: 'Invalid URL format' });
+  }
+
+  try {
+    await pool.query(
+      'UPDATE team_members SET name = ?, role = ?, image_url = ?, instagram_url = ? WHERE id = ?',
+      [sanitizedName, sanitizedRole, image_url, instagram_url, memberId]
+    );
+    
+    res.json({ message: 'Team member updated successfully' });
+  } catch (err) {
+    console.error('Error updating team member:', err);
+    res.status(500).json({ error: 'Error updating team member' });
+  }
 });
 
 // GET /api/feedback - Fetch all feedback entries (latest first)

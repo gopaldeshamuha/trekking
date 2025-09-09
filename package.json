@@ -7,7 +7,10 @@
     "build": "node build.js",
     "build:prod": "NODE_ENV=production node build.js",
     "optimize": "node build.js --optimize",
-    "analyze": "node build.js --analyze"
+    "analyze": "node build.js --analyze",
+    "setup-db": "node setup-database.js",
+    "test-db": "node test-database-setup.js",
+    "setup": "npm run setup-db && npm run test-db"
   },
   "description": "",
   "main": "index.js",

@@ -409,6 +409,7 @@ function formatDateTime(dt) {
     content.innerHTML = [
       '<div class="changes-tabs" style="display:flex;gap:1em;margin-bottom:1.5em;">',
         '<button class="changes-tab-btn active" data-tab="addTrek">Add Trek</button>',
+        '<button class="changes-tab-btn" data-tab="weekHeroes">Week Heroes</button>',
         '<button class="changes-tab-btn" data-tab="slide">Slide</button>',
         '<button class="changes-tab-btn" data-tab="trailMoment">Trail Moment</button>',
       '</div>',
@@ -431,6 +432,8 @@ function formatDateTime(dt) {
     if (tab === 'addTrek') {
       tabContent.innerHTML = renderAddTrekFormHTML();
       bindAddTrekForm();
+    } else if (tab === 'weekHeroes') {
+      renderWeekHeroesTable(tabContent);
     } else if (tab === 'slide') {
       renderSlideImageTable(tabContent);
     } else if (tab === 'trailMoment') {
@@ -467,16 +470,18 @@ async function renderTrailMomentImageTable(tabContent) {
               style="max-width:180px;max-height:80px;border-radius:8px;border:1px solid #eee;object-fit:cover;">
           </td>
           <td>
-            <button onclick="saveTrailMoment(${i})" 
-              class="save-moment-btn"
-              style="background:linear-gradient(90deg,#ff9800,#ffb347);color:#fff;font-weight:700;padding:0.4em 1.2em;border:none;border-radius:8px;cursor:pointer;">
-              Save
-            </button>
+            <div style="display:flex;flex-direction:column;gap:0.5em;align-items:center;">
+              <button onclick="saveTrailMoment(${i})" 
+                class="save-moment-btn"
+                style="background:linear-gradient(90deg,#ff9800,#ffb347);color:#fff;font-weight:700;padding:0.4em 1.2em;border:none;border-radius:8px;cursor:pointer;">
+                Save
+              </button>
+              <div id="trailMomentMsg${i}" style="font-size:0.8em;min-height:1.2em;text-align:center;max-width:120px;"></div>
+            </div>
           </td>
         </tr>
       `).join(''),
-      '</tbody></table>',
-      '<div id="trailMomentMsg"></div>'
+      '</tbody></table>'
     ].join('');
 
     // Add helper functions to window for button onclick handlers
@@ -489,8 +494,16 @@ async function renderTrailMomentImageTable(tabContent) {
 
     window.saveTrailMoment = async function(index) {
       const input = document.querySelector(`input[name="img${index}"]`);
-      const messageEl = document.getElementById('trailMomentMsg');
-      if (!input) return;
+      const messageEl = document.getElementById(`trailMomentMsg${index}`);
+      const saveBtn = document.querySelector(`button[onclick="saveTrailMoment(${index})"]`);
+      
+      if (!input || !messageEl) return;
+
+      // Show loading state
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
+      messageEl.innerHTML = '';
 
       try {
         // Get current gallery first
@@ -505,7 +518,10 @@ async function renderTrailMomentImageTable(tabContent) {
         
         const saveRes = await fetch('/api/gallery', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          },
           body: JSON.stringify({ images: newImages })
         });
         
@@ -514,7 +530,8 @@ async function renderTrailMomentImageTable(tabContent) {
           throw new Error(errorData.error || 'Failed to update');
         }
 
-        messageEl.innerHTML = `<span style="color:green">Image ${index + 1} updated!</span>`;
+        // Show success message in individual action block
+        messageEl.innerHTML = `<span style="color:green;font-weight:600;">✓ Updated!</span>`;
         setTimeout(() => {
           messageEl.innerHTML = '';
         }, 3000);
@@ -529,13 +546,160 @@ async function renderTrailMomentImageTable(tabContent) {
             img ? `<img src="${img}" alt="Trail Moment ${i+1}">` : ''
           ).join('');
         }
+
+        // Dispatch event for real-time updates
+        window.dispatchEvent(new CustomEvent('trailMomentUpdated'));
+        if (window.opener && typeof window.opener.refreshTrailMomentGallery === 'function') {
+          window.opener.refreshTrailMomentGallery();
+        }
+
       } catch (err) {
         console.error('Error updating gallery:', err);
-        messageEl.innerHTML = `<span style="color:red">Failed to update image ${index + 1}: ${err.message}</span>`;
+        messageEl.innerHTML = `<span style="color:red;font-weight:600;">✗ Failed</span>`;
+        setTimeout(() => {
+          messageEl.innerHTML = '';
+        }, 5000);
+      } finally {
+        // Restore button state
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
       }
     };
   } catch (err) {
     tabContent.innerHTML = '<div class="error-message">Failed to load gallery images.</div>';
+  }
+}
+
+// Week Heroes Management
+async function renderWeekHeroesTable(tabContent) {
+  tabContent.innerHTML = '<div class="loading">Loading week heroes...</div>';
+  try {
+    const res = await fetch('/api/team-members');
+    const heroes = await res.json();
+    
+    if (!Array.isArray(heroes) || heroes.length === 0) {
+      tabContent.innerHTML = '<div class="error-message">No week heroes found.</div>';
+      return;
+    }
+
+    tabContent.innerHTML = [
+      '<table class="admin-trek-table" style="width:100%;margin-bottom:1.5em;">',
+      '<thead><tr><th>#</th><th>Name</th><th>Role</th><th>Image URL</th><th>Instagram URL</th><th>Preview</th><th>Action</th></tr></thead>',
+      '<tbody>',
+      heroes.map((hero, i) => `
+        <tr data-heroid="${hero.id}">
+          <td style="font-weight:600;">${i+1}</td>
+          <td>
+            <input type="text" name="name${hero.id}" value="${hero.name || ''}" 
+              style="width:90%;max-width:120px;" placeholder="Name">
+          </td>
+          <td>
+            <input type="text" name="role${hero.id}" value="${hero.role || ''}" 
+              style="width:90%;max-width:120px;" placeholder="Role">
+          </td>
+          <td>
+            <input type="url" name="image${hero.id}" value="${hero.image_url || ''}" 
+              style="width:90%;max-width:200px;" placeholder="Image URL"
+              oninput="updateWeekHeroPreview(this, ${hero.id})">
+          </td>
+          <td>
+            <input type="url" name="instagram${hero.id}" value="${hero.instagram_url || ''}" 
+              style="width:90%;max-width:200px;" placeholder="Instagram URL">
+          </td>
+          <td>
+            <img src="${hero.image_url || ''}" alt="${hero.role || 'Week Hero'}" 
+              id="weekHeroPreview${hero.id}"
+              style="max-width:80px;max-height:60px;border-radius:8px;border:1px solid #eee;object-fit:cover;">
+          </td>
+          <td>
+            <div style="display:flex;flex-direction:column;gap:0.5em;align-items:center;">
+              <button onclick="saveWeekHero(${hero.id})" 
+                class="save-week-hero-btn"
+                style="background:linear-gradient(90deg,#ff9800,#ffb347);color:#fff;font-weight:700;padding:0.4em 1.2em;border:none;border-radius:8px;cursor:pointer;">
+                Save
+              </button>
+              <div id="weekHeroMsg${hero.id}" style="font-size:0.8em;min-height:1.2em;text-align:center;max-width:120px;"></div>
+            </div>
+          </td>
+        </tr>
+      `).join(''),
+      '</tbody></table>'
+    ].join('');
+
+    // Add helper functions to window for button onclick handlers
+    window.updateWeekHeroPreview = function(input, id) {
+      const preview = document.getElementById(`weekHeroPreview${id}`);
+      if (preview) {
+        preview.src = input.value.trim() || '';
+      }
+    };
+
+    window.saveWeekHero = async function(id) {
+      const nameInput = document.querySelector(`input[name="name${id}"]`);
+      const roleInput = document.querySelector(`input[name="role${id}"]`);
+      const imageInput = document.querySelector(`input[name="image${id}"]`);
+      const instagramInput = document.querySelector(`input[name="instagram${id}"]`);
+      const messageEl = document.getElementById(`weekHeroMsg${id}`);
+      const saveBtn = document.querySelector(`button[onclick="saveWeekHero(${id})"]`);
+      
+      if (!nameInput || !roleInput || !imageInput || !instagramInput || !messageEl) return;
+
+      // Show loading state
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
+      messageEl.innerHTML = '';
+
+      try {
+        const updateData = {
+          name: nameInput.value.trim(),
+          role: roleInput.value.trim(),
+          image_url: imageInput.value.trim(),
+          instagram_url: instagramInput.value.trim()
+        };
+
+        const saveRes = await fetch(`/api/team-members/${id}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          },
+          body: JSON.stringify(updateData)
+        });
+        
+        if (!saveRes.ok) {
+          const errorData = await saveRes.json();
+          throw new Error(errorData.error || 'Failed to update');
+        }
+
+        // Show success message in individual action block
+        messageEl.innerHTML = `<span style="color:green;font-weight:600;">✓ Updated!</span>`;
+        setTimeout(() => {
+          messageEl.innerHTML = '';
+        }, 3000);
+
+        // Dispatch event for real-time updates
+        window.dispatchEvent(new CustomEvent('weekHeroesUpdated'));
+        if (window.opener && typeof window.opener.refreshWeekHeroes === 'function') {
+          window.opener.refreshWeekHeroes();
+        }
+
+      } catch (err) {
+        console.error('Error updating week hero:', err);
+        messageEl.innerHTML = `<span style="color:red;font-weight:600;">✗ Failed</span>`;
+        setTimeout(() => {
+          messageEl.innerHTML = '';
+        }, 5000);
+      } finally {
+        // Restore button state
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+      }
+    };
+
+  } catch (err) {
+    console.error('Error loading week heroes:', err);
+    tabContent.innerHTML = '<div class="error-message">Failed to load week heroes.</div>';
   }
 }
 

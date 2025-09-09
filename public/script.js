@@ -18,8 +18,56 @@ async function loadTrailMomentGallery() {
   }
 }
 
+// --- Week Heroes Dynamic Loading ---
+async function loadWeekHeroes() {
+  const teamGrid = document.getElementById('teamGrid');
+  if (!teamGrid) return;
+  
+  teamGrid.innerHTML = '<div class="loading">Loading week heroes...</div>';
+  
+  try {
+    const res = await fetch('/api/team-members');
+    if (!res.ok) throw new Error('Failed to fetch week heroes');
+    
+    const heroes = await res.json();
+    
+    if (!Array.isArray(heroes) || heroes.length === 0) {
+      teamGrid.innerHTML = '<div class="error-message">No week heroes found.</div>';
+      return;
+    }
+    
+    teamGrid.innerHTML = heroes.map(hero => `
+      <div class="team-card">
+        <img src="${hero.image_url}" 
+             srcset="${hero.image_url} 400w, ${hero.image_url} 800w"
+             sizes="(max-width: 768px) 400px, 800px"
+             alt="${hero.role}" 
+             loading="lazy">
+        <a href="${hero.instagram_url}" target="_blank" rel="noopener">
+          <span>${hero.name} — ${hero.role}</span>
+        </a>
+      </div>
+    `).join('');
+    
+  } catch (err) {
+    console.error('Error loading week heroes:', err);
+    teamGrid.innerHTML = '<div class="error-message">Failed to load week heroes.</div>';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadTrailMomentGallery();
+  loadWeekHeroes();
+});
+
+// Global function to refresh week heroes (can be called from admin panel)
+window.refreshWeekHeroes = function() {
+  loadWeekHeroes();
+};
+
+// Listen for week heroes updates from admin panel
+window.addEventListener('weekHeroesUpdated', () => {
+  loadWeekHeroes();
 });
 // Shortcuts for selecting elements
 const $ = (sel) => document.querySelector(sel);
