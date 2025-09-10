@@ -10,7 +10,9 @@ const helmet = require('helmet');
 // Rate limiting
 const rateLimit = require('express-rate-limit');
 const app = express();
+// PRODUCTION: Change to production port
 const PORT = process.env.PORT || 3003;
+//const PORT = process.env.PORT || 8080; // Use standard production port
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('❌ JWT_SECRET environment variable is required!');
@@ -102,6 +104,9 @@ const allowedOrigins = [
   'http://127.0.0.1:3001',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:3003'
+  //'https://theronins.in',        // Add your production domain
+  //'https://www.theronins.in',    // Add www version
+  // Remove all localhost entries for production
 ];
 
 app.use((req, res, next) => {
@@ -124,7 +129,7 @@ app.post('/api/admin/login', authLimiter, (req, res) => {
     const { password } = req.body;
     
     if (password === ADMIN_PASSWORD) {
-        const token = jwt.sign({ admin: true }, JWT_SECRET, { expiresIn: '6000s' }); // 100 minutes in seconds
+        const token = jwt.sign({ admin: true }, JWT_SECRET, { expiresIn: '3600s' }); // 600 minutes in seconds
         res.json({ token });
     } else {
         res.status(401).json({ error: 'Invalid password' });
@@ -280,7 +285,7 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || 'ronins_treks',
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 200,
   queueLimit: 0
 });
 
