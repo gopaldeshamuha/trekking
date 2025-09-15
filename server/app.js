@@ -289,6 +289,13 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+// Make database pool accessible to routes
+app.set('db', pool);
+
+// Import and register GPS tracking routes
+const gpsRoutes = require('./gps-tracking-routes');
+app.use('/api/gps', gpsRoutes);
+
 // Middleware has been moved to the top of the file
 
 /* ------------------- ROUTES ------------------- */
@@ -772,6 +779,10 @@ app.post('/api/contact', async (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
+// GPS Tracking API Routes
+const gpsRoutes = require('./gps-tracking-routes');
+app.use('/api/gps', gpsRoutes);
 
 // Security headers test endpoint
 app.get('/api/security-test', (req, res) => {

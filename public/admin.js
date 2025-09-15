@@ -298,6 +298,25 @@ document.addEventListener('DOMContentLoaded', () => {
         feedbackButton.parentNode.insertBefore(mismatchedBtn, feedbackButton.nextSibling);
     }
     
+    // Add GPS Settings button
+    const gpsBtn = document.createElement('button');
+    gpsBtn.id = 'adminMenuGPS';
+    gpsBtn.className = 'admin-menu-btn';
+    gpsBtn.innerHTML = '🗺️ GPS Settings';
+    gpsBtn.onclick = () => {
+        // Set this button as active
+        document.querySelectorAll('.admin-menu-btn').forEach(btn => btn.classList.remove('active'));
+        gpsBtn.classList.add('active');
+        
+        // Show GPS settings
+        renderGPSSettings();
+    };
+    
+    // Add GPS button after Mismatched Fields button
+    if (mismatchedBtn && mismatchedBtn.parentNode) {
+        mismatchedBtn.parentNode.insertBefore(gpsBtn, mismatchedBtn.nextSibling);
+    }
+    
     // Start token and activity verification
     startTokenCheck();
     
@@ -1341,4 +1360,129 @@ function renderQueries(queries) {
 function renderError(msg) {
   const content = document.getElementById('adminContent');
   content.innerHTML = '<div class="admin-error">' + msg + '</div>';
+}
+
+// GPS Settings Management
+async function renderGPSSettings() {
+  const content = document.getElementById('adminContent');
+  content.innerHTML = '<div class="loading">Loading GPS settings...</div>';
+  
+  try {
+    // Fetch current GPS configuration
+    const response = await authenticatedFetch('/api/gps/config');
+    const config = await response.json();
+    
+    content.innerHTML = [
+      '<div class="admin-section">',
+        '<h2 style="color: var(--brand-start); margin-bottom: 1.5em;">🗺️ GPS Tracking Settings</h2>',
+        '<div style="background: var(--card); padding: 2em; border-radius: 12px; box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);">',
+          '<div style="margin-bottom: 2em;">',
+            '<h3 style="color: var(--text); margin-bottom: 1em;">Driver Access Password</h3>',
+            '<p style="color: var(--text-secondary); margin-bottom: 1.5em;">This password is required for drivers to access the GPS tracking panel in the mobile app.</p>',
+            '<div style="display: flex; gap: 1em; align-items: center; flex-wrap: wrap;">',
+              '<input type="password" id="driverPasswordInput" placeholder="Enter new driver password" ',
+                     'style="flex: 1; min-width: 200px; padding: 0.8em; border: 2px solid var(--light-gray); border-radius: 8px; font-size: 1em;">',
+              '<button id="updateDriverPasswordBtn" ',
+                      'style="background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); color: white; border: none; padding: 0.8em 1.5em; border-radius: 8px; font-weight: 600; cursor: pointer;">',
+                'Update Password',
+              '</button>',
+            '</div>',
+            '<div id="driverPasswordMsg" style="margin-top: 1em; font-size: 0.9em;"></div>',
+          '</div>',
+          '<div style="margin-bottom: 2em;">',
+            '<h3 style="color: var(--text); margin-bottom: 1em;">Current Configuration</h3>',
+            '<div style="background: var(--bg); padding: 1em; border-radius: 8px; border-left: 4px solid var(--brand-start);">',
+              '<p style="margin: 0; color: var(--text-secondary);">',
+                '<strong>Driver Password:</strong> ',
+                '<span id="currentDriverPassword">••••••••</span>',
+                ' <button id="showPasswordBtn" style="background: none; border: none; color: var(--brand-start); cursor: pointer; font-size: 0.9em;">Show</button>',
+              '</p>',
+            '</div>',
+          '</div>',
+          '<div style="background: #f0f8ff; padding: 1.5em; border-radius: 8px; border: 1px solid #e0f0ff;">',
+            '<h4 style="color: var(--text); margin-bottom: 1em;">📱 Mobile App Instructions</h4>',
+            '<ol style="color: var(--text-secondary); line-height: 1.6; padding-left: 1.5em;">',
+              '<li>Drivers: Double-tap the map button in the app header</li>',
+              '<li>Enter the driver password to access the GPS panel</li>',
+              '<li>Select a trek and start GPS tracking</li>',
+              '<li>Users: Single-tap the map button to view live treks</li>',
+            '</ol>',
+          '</div>',
+        '</div>',
+      '</div>'
+    ].join('');
+    
+    // Bind event listeners
+    document.getElementById('updateDriverPasswordBtn').addEventListener('click', updateDriverPassword);
+    document.getElementById('showPasswordBtn').addEventListener('click', togglePasswordVisibility);
+    
+    // Store current password for show/hide functionality
+    window.currentDriverPassword = config.driver_password || 'ronin2024';
+    
+  } catch (error) {
+    console.error('Error loading GPS settings:', error);
+    content.innerHTML = '<div class="admin-error">Failed to load GPS settings. Please try again.</div>';
+  }
+}
+
+async function updateDriverPassword() {
+  const input = document.getElementById('driverPasswordInput');
+  const btn = document.getElementById('updateDriverPasswordBtn');
+  const msg = document.getElementById('driverPasswordMsg');
+  
+  const newPassword = input.value.trim();
+  
+  if (!newPassword) {
+    msg.innerHTML = '<span style="color: #ff4444;">Please enter a password</span>';
+    return;
+  }
+  
+  if (newPassword.length < 4) {
+    msg.innerHTML = '<span style="color: #ff4444;">Password must be at least 4 characters</span>';
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.textContent = 'Updating...';
+  
+  try {
+    const response = await authenticatedFetch('/api/gps/config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ driver_password: newPassword })
+    });
+    
+    if (response.ok) {
+      msg.innerHTML = '<span style="color: #44aa44;">Password updated successfully!</span>';
+      input.value = '';
+      window.currentDriverPassword = newPassword;
+      
+      // Update the displayed password
+      const showBtn = document.getElementById('showPasswordBtn');
+      if (showBtn.textContent === 'Hide') {
+        document.getElementById('currentDriverPassword').textContent = newPassword;
+      }
+    } else {
+      msg.innerHTML = '<span style="color: #ff4444;">Failed to update password</span>';
+    }
+  } catch (error) {
+    console.error('Error updating driver password:', error);
+    msg.innerHTML = '<span style="color: #ff4444;">Error updating password</span>';
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Update Password';
+}
+
+function togglePasswordVisibility() {
+  const passwordSpan = document.getElementById('currentDriverPassword');
+  const showBtn = document.getElementById('showPasswordBtn');
+  
+  if (showBtn.textContent === 'Show') {
+    passwordSpan.textContent = window.currentDriverPassword;
+    showBtn.textContent = 'Hide';
+  } else {
+    passwordSpan.textContent = '••••••••';
+    showBtn.textContent = 'Show';
+  }
 }
