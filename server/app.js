@@ -780,8 +780,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// GPS Tracking API Routes
-const gpsRoutes = require('./gps-tracking-routes');
+// GPS Tracking API Routes (already declared above)
 app.use('/api/gps', gpsRoutes);
 
 // Security headers test endpoint

@@ -9,7 +9,7 @@ router.get('/driver-treks', async (req, res) => {
   try {
     const db = req.app.get('db');
     
-    // Get treks with GPS tracking information
+    // Get treks with GPS tracking information (latest live_trek entry per trek)
     const [treks] = await db.query(`
       SELECT 
         t.id,
@@ -20,7 +20,17 @@ router.get('/driver-treks', async (req, res) => {
         lt.status_message as stop_message,
         lt.created_at as live_trek_created
       FROM treks t
-      LEFT JOIN live_treks lt ON t.id = lt.trek_id
+      LEFT JOIN (
+        SELECT 
+          trek_id,
+          is_active,
+          last_location_update,
+          driver_id,
+          status_message,
+          created_at,
+          ROW_NUMBER() OVER (PARTITION BY trek_id ORDER BY created_at DESC) as rn
+        FROM live_treks
+      ) lt ON t.id = lt.trek_id AND lt.rn = 1
       ORDER BY COALESCE(lt.is_active, FALSE) DESC, t.name ASC
     `);
     
@@ -42,7 +52,7 @@ router.get('/active-treks', async (req, res) => {
   try {
     const db = req.app.get('db');
     
-    // Get active treks with only essential information
+    // Get active treks with only essential information (latest live_trek entry per trek)
     const [treks] = await db.query(`
       SELECT 
         t.id,
@@ -54,14 +64,22 @@ router.get('/active-treks', async (req, res) => {
         tl.longitude,
         tl.accuracy
       FROM treks t
-      INNER JOIN live_treks lt ON t.id = lt.trek_id
+      INNER JOIN (
+        SELECT 
+          trek_id,
+          is_active,
+          last_location_update,
+          driver_id,
+          ROW_NUMBER() OVER (PARTITION BY trek_id ORDER BY created_at DESC) as rn
+        FROM live_treks
+        WHERE is_active = TRUE
+      ) lt ON t.id = lt.trek_id AND lt.rn = 1
       LEFT JOIN trek_locations tl ON t.id = tl.trek_id 
         AND tl.timestamp = (
           SELECT MAX(timestamp) 
           FROM trek_locations 
           WHERE trek_id = t.id
         )
-      WHERE lt.is_active = TRUE
       ORDER BY lt.last_location_update DESC
     `);
     
